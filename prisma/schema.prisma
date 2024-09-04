@@ -1,0 +1,135 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider          = "mysql"
+    url               = env("DATABASE_URL")
+    shadowDatabaseUrl = env("SHADOWN_DATABASE_URL")
+}
+
+model Profile {
+    id       Int            @id @default(autoincrement())
+    name     String
+    clients  Client[]
+    managers SalesManager[]
+}
+
+model Client {
+    id        Int             @id @default(autoincrement())
+    username  String          @unique
+    email     String          @unique
+    password  String
+    image     String?
+    profileId Int
+    profile   Profile         @relation(fields: [profileId], references: [id])
+    orders    Order[]
+    products  ClientProduct[]
+    likes     Like[]
+    favorites Favorite[]
+}
+
+model SalesManager {
+    id        Int     @id @default(autoincrement())
+    username  String
+    password  String
+    profile   Profile @relation(fields: [profileId], references: [id])
+    profileId Int
+}
+
+model Product {
+    id          Int             @id @default(autoincrement())
+    name        String
+    categoryId  Int
+    category    Category        @relation(fields: [categoryId], references: [id])
+    stock       Int
+    price       Float
+    description String?
+    image       String?
+    available   Boolean?        @default(true)
+    timesBought Int?            @default(0)
+    likes       Like[]
+    favorites   Favorite[]
+    comments    Comment[]
+    orders      ProductOrder[]
+    clients     ClientProduct[]
+}
+
+model Category {
+    id       Int       @id @default(autoincrement())
+    name     String
+    products Product[]
+}
+
+model Comment {
+    id        Int       @id @default(autoincrement())
+    message   String
+    product   Product?  @relation(fields: [productId], references: [id])
+    productId Int?
+    response  Response?
+}
+
+model Response {
+    id        Int     @id @default(autoincrement())
+    message   String
+    comment   Comment @relation(fields: [commentId], references: [id])
+    commentId Int     @unique
+}
+
+model Order {
+    id            Int            @id @default(autoincrement())
+    paymentMethod String
+    paymentId     String
+    address       String
+    date          DateTime       @default(now())
+    state         String         @default("pendiente")
+    client        Client         @relation(fields: [clientId], references: [id])
+    clientId      Int
+    products      ProductOrder[]
+}
+
+// Una lista de ClientProduct donde la clave del cliente es igual, es la abstraccion del carrito de compras
+model ClientProduct {
+    clientId  Int
+    productId Int
+    client    Client  @relation(fields: [clientId], references: [id])
+    product   Product @relation(fields: [productId], references: [id])
+    amount    Int
+
+    @@id([clientId, productId])
+}
+
+model Favorite {
+    clientId  Int
+    productId Int
+    client    Client  @relation(fields: [clientId], references: [id])
+    product   Product @relation(fields: [productId], references: [id])
+
+    @@id([clientId, productId])
+}
+
+model Like {
+    clientId  Int
+    productId Int
+    client    Client  @relation(fields: [clientId], references: [id])
+    product   Product @relation(fields: [productId], references: [id])
+
+    @@id([clientId, productId])
+}
+
+// Una lista de ProductOrder donde la clave de el pedido es igual, es la abstraccion los productos del pedido
+model ProductOrder {
+    productId Int
+    orderId   Int
+    order     Order   @relation(fields: [orderId], references: [id])
+    product   Product @relation(fields: [productId], references: [id])
+    amount    Int
+
+    @@id([productId, orderId])
+}
