@@ -1,10 +1,8 @@
 const app = require('./presentation/app')
 const database = require('./data/database/database')
 
-const PORT = process.env.PORT || 3000
-
 async function createProfiles() {
-  const profiles = await database.profile.createMany({
+  return await database.profile.createMany({
     data: [
       {
         name: 'client'
@@ -14,22 +12,59 @@ async function createProfiles() {
       }
     ]
   })
-  return profiles
+}
+
+async function createCategories() {
+  return await database.category.createMany({
+    data: [
+      {
+        name: 'running'
+      },
+      {
+        name: 'training'
+      },
+      {
+        name: 'moda'
+      },
+      {
+        name: 'futbol'
+      },
+      {
+        name: 'rugby'
+      },
+      {
+        name: 'voley'
+      },
+      {
+        name: 'hockey'
+      },
+      {
+        name: 'basquet'
+      },
+      {
+        name: 'tenis'
+      },
+      {
+        name: 'padel'
+      }
+    ]
+  })
 }
 
 async function createSalesManager(username, password) {
-  const salesManager = await database.salesManager.create({
+  return await database.salesManager.create({
     data: {
       username,
       password,
       profileId: 2
     }
   })
-  return salesManager
 }
 
 async function main() {
   try {
+    console.log(await createProfiles())
+    console.log(await createCategories())
     console.log(await createSalesManager('lucas77', 'lucas123'))
   } catch (e) {
     console.log(e)
@@ -38,6 +73,8 @@ async function main() {
 
 // main()
 
-app.listen(3000, () => {
+const PORT = process.env.PORT ?? 3000
+
+app.listen(PORT, () => {
   console.log('Server on port', PORT)
 })

@@ -5,7 +5,11 @@ const clientInclude = {
 }
 
 const clientProductInclude = {
-  product: true
+  product: {
+    include: {
+      category: true
+    }
+  }
 }
 
 const orderInclude = {
@@ -125,7 +129,7 @@ class ClientModel {
       },
       include: clientProductInclude
     })
-    return products
+    return products.map(p => ({...p.product, amount: p.amount}))
   }
 
   static async createProduct(id, productId, amount) {
@@ -287,6 +291,26 @@ class ClientModel {
       include: favoriteInclude
     })
     return favorite
+  }
+
+  static async createNotification(id, message) {
+    const notification = await database.notification.create({
+      data: {
+        clientId: id,
+        message
+      }
+    })
+    return notification
+  }
+
+  static async findNotifications(id) {
+    const notifications = await database.notification.findMany({
+      where: {
+        clientId: id
+      },
+      skip: 4,
+    })
+    return notifications
   }
 }
 

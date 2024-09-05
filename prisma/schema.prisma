@@ -22,17 +22,26 @@ model Profile {
 }
 
 model Client {
-    id        Int             @id @default(autoincrement())
-    username  String          @unique
-    email     String          @unique
-    password  String
-    image     String?
-    profileId Int
-    profile   Profile         @relation(fields: [profileId], references: [id])
-    orders    Order[]
-    products  ClientProduct[]
-    likes     Like[]
-    favorites Favorite[]
+    id            Int             @id @default(autoincrement())
+    username      String          @unique
+    email         String          @unique
+    password      String
+    image         String?
+    profile       Profile         @relation(fields: [profileId], references: [id])
+    profileId     Int
+    notifications Notification[]
+    orders        Order[]
+    products      ClientProduct[]
+    likes         Like[]
+    favorites     Favorite[]
+}
+
+model Notification {
+    id       Int      @id @default(autoincrement())
+    message  String
+    date     DateTime @default(now())
+    client   Client   @relation(fields: [clientId], references: [id])
+    clientId Int
 }
 
 model SalesManager {
@@ -52,13 +61,29 @@ model Product {
     price       Float
     description String?
     image       String?
-    available   Boolean?        @default(true)
-    timesBought Int?            @default(0)
+    available   Boolean         @default(true)
+    timesBought Int             @default(0)
+    visits      Int             @default(0)
+    discount    Discount?
+    last        Last?
     likes       Like[]
     favorites   Favorite[]
     comments    Comment[]
     orders      ProductOrder[]
     clients     ClientProduct[]
+}
+
+model Discount {
+    id         Int     @id @default(autoincrement())
+    percentage Int
+    product    Product @relation(fields: [productId], references: [id])
+    productId  Int     @unique
+}
+
+model Last {
+    id        Int     @id @default(autoincrement())
+    product   Product @relation(fields: [productId], references: [id])
+    productId Int     @unique
 }
 
 model Category {
@@ -70,8 +95,8 @@ model Category {
 model Comment {
     id        Int       @id @default(autoincrement())
     message   String
-    product   Product?  @relation(fields: [productId], references: [id])
-    productId Int?
+    product   Product   @relation(fields: [productId], references: [id])
+    productId Int
     response  Response?
 }
 

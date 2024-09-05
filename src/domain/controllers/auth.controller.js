@@ -13,18 +13,14 @@ class AuthController {
     try {
       const { username, password } = req.body
       const clientFound = await ClientModel.findByUsernameAndPassword(username, password)
-      console.log(clientFound)
       if (!clientFound)
         return res.status(403).json({ message: 'Nombre de usuario o contraseña incorrectos' })
       const token = await createAccesToken({
         id: clientFound.id,
-        profile: {
-          id: clientFound.profile.id,
-          name: clientFound.profile.name
-        }
+        profile: clientFound.profile,
       })
       res.cookie('token', token)
-      return res.status(200).json(clientFound)
+      return res.status(200).json({ id: clientFound.id, profile: clientFound.profile })
     } catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server error' })
@@ -39,13 +35,10 @@ class AuthController {
         return res.status(403).json({ message: 'Nombre de usuario o contraseña incorrectos' })
       const token = await createAccesToken({
         id: salesManagerFound.id,
-        profile: {
-          id: salesManagerFound.profile.id,
-          name: salesManagerFound.profile.name
-        }
+        profile: salesManagerFound.profile,
       })
       res.cookie('token', token)
-      return res.status(200).json(salesManagerFound)
+      return res.status(200).json({ id: salesManagerFound.id, profile: salesManagerFound.profile })
     } catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server error' })
@@ -61,13 +54,10 @@ class AuthController {
       const newClient = await ClientModel.create(username, email, password)
       const token = await createAccesToken({
         id: newClient.id,
-        profile: {
-          id: newClient.profile.id,
-          name: newClient.profile.name
-        }
+        profile: newClient.profile,
       })
       res.cookie('token', token)
-      return res.status(200).json(newClient)
+      return res.status(200).json({ id: newClient.id, profile: newClient.profile })
     } catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server error' })
@@ -83,19 +73,28 @@ class AuthController {
 
   static async verify(req, res) {
     const { token } = req.cookies
+
     if (!token)
-      return res.status(401).json({ message: 'No token pa' })
+      return res.status(401).json({ message: 'No token' })
+
     const { id, profile } = await verifyAccesToken(token)
+
     if (profile.id === PROFILES.CLIENT) {
+
       const client = await ClientModel.findById(id)
+
       if (!client)
-        return res.status(400).json({ message: 'El usuario no existe' })
-      return res.json(client)
+        return res.status(400).json({ message: 'Token no valido' })
+
+      return res.json({ id, profile })
     }
+
     const salesManager = await SalesManagerModel.findById(id)
+
     if (!salesManager)
-      return res.status(400).json({ message: 'El usuario no existe' })
-    return res.json(salesManager)
+      return res.status(400).json({ message: 'Token no valido' })
+
+    return res.json({ id, profile })
   }
 }
 

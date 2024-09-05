@@ -15,35 +15,47 @@ const orderExample = {
     {
       id: 1,
       name: 'Pelota de futbol',
-      category: 'futbol',
+      category: {
+        id: 1,
+        name:'futbol',
+      },
       price: 3000,
       amount: 4
     },
     {
       id: 1,
       name: 'Pelota de basketball',
-      category: 'basketball',
+      category: {
+        id: 2,
+        name:'basketball',
+      },
       price: 1000,
       amount: 8
     },
     {
       id: 2,
       name: 'Camisa de river',
-      category: 'futbol',
+      category: {
+        id: 3,
+        name:'futbol',
+      },
       price: 5000,
       amount: 2
     },
     {
       id: 4,
       name: 'Gorro de pisina',
-      category: 'nadismo',
+      category: {
+        id: 4,
+        name:'nadismo'
+      },
       price: 300,
       amount: 1
     }
   ]
 }
 
-export function createPDF(dataCallback, endCallback, order) {
+function createPDF(dataCallback, endCallback, order) {
   const doc = new PDFDocument({ margin: 32, size: 'A4' })
 
   doc.on('data', dataCallback)
@@ -57,7 +69,7 @@ export function createPDF(dataCallback, endCallback, order) {
     title: 'Productos de la compra',
     headers: ['ID', 'Nombre', 'Categoria', 'Precio', 'Cantidad', 'Precio Total'],
     rows: [
-      ...order.products.map(p => ([p.id, p.name, p.category, p.price, p.amount, p.price * p.amount])),
+      ...order.products.map(p => ([p.id, p.name, p.category.name, p.price, p.amount, p.price * p.amount])),
       order.products.map(p => (['Total', '', '', '', order.products.reduce((acum, a) => acum + a.price, 0)]))
     ]
   }
@@ -67,4 +79,8 @@ export function createPDF(dataCallback, endCallback, order) {
   })
 
   doc.end()
+}
+
+module.exports = {
+  createPDF
 }

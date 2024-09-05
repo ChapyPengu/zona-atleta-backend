@@ -3,6 +3,35 @@ const CategoryModel = require('../../data/models/category.model')
 
 class ProductController {
 
+  // static async getAllByFilters(req, res) {
+  //   try {
+  //     const search = {}
+  //     const { name, category, min, max } = req.query
+  //     if (name) {
+  //       search.name = name
+  //     }
+  //     if (category) {
+  //       search.category = category
+  //     }
+
+  //     if (category) {
+  //       search.max = max
+  //     }
+
+  //     if (category) {
+  //       search.min = min
+  //     }
+
+  //     const products = await ProductModel.findByFilters(search)
+  //     if (products.length === 0)
+  //       return res.status(400).json({ message: 'No hay productos' })
+  //     return res.json(products)
+  //   } catch (e) {
+  //     console.log(e)
+  //     return res.status(500).json({ message: 'Server Error' })
+  //   }
+  // }
+
   static async getAll(req, res) {
     try {
       const products = await ProductModel.findMany()
@@ -28,9 +57,46 @@ class ProductController {
     }
   }
 
+  static async getDiscount(req, res) {
+    try {
+      const products = await ProductModel.findManyDiscount()
+      if (products.length === 0)
+        return res.status(400).json({ message: 'No hay productos' })
+      return res.json(products)
+    } catch (e) {
+      console.log(e)
+      return res.status(500).json({ message: 'Server Error' })
+    }
+  }
+
+  static async getPopular(req, res) {
+    try {
+      const products = await ProductModel.findManyPopular()
+      if (products.length === 0)
+        return res.status(400).json({ message: 'No hay productos' })
+      return res.json(products)
+    } catch (e) {
+      console.log(e)
+      return res.status(500).json({ message: 'Server Error' })
+    }
+  }
+
+  static async getLast(req, res) {
+    try {
+      const products = await ProductModel.findManyLast()
+      if (products.length === 0)
+        return res.status(400).json({ message: 'No hay productos' })
+      return res.json(products)
+    } catch (e) {
+      console.log(e)
+      return res.status(500).json({ message: 'Server Error' })
+    }
+  }
+
   static async post(req, res) {
     try {
       const p = req.body
+      console.log(p)
       const category = await CategoryModel.findById(parseInt(p.categoryId))
       if (!category)
         return res.status(400).json({ message: 'Category not found' })
@@ -81,6 +147,7 @@ class ProductController {
       const id = parseInt(req.params.id)
       const { message } = req.body
       const comment = await ProductModel.createComment(id, message)
+      console.log(comment)
       return res.json(comment)
     } catch (e) {
       console.log(e)

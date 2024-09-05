@@ -13,6 +13,11 @@ class ProductModel {
     return products
   }
 
+  static async findByFilters(search = {}, offset = 0, limit = 15) {
+    const products = await database.product.findMany({})
+    return products
+  }
+
   static async findById(id) {
     const product = await database.product.findFirst({
       where: {
@@ -22,12 +27,42 @@ class ProductModel {
         category: true,
         comments: {
           include: {
-            response: true 
+            response: true
           }
         }
       }
     })
     return product
+  }
+
+  static async findManyDiscount() {
+    const discounts = await database.discount.findMany({
+      include: {
+        product: productInclude
+      }
+    })
+    return discounts.map(p => ({...p.product, percentage: p.percentage}))
+  }
+
+  static async findManyPopular() {
+    const products = await database.product.findMany({
+      skip: 10,
+      orderBy: {
+        visits: true
+      },
+      include: productInclude
+    })
+    return products
+  }
+
+  static async findManyLast() {
+    const last = await database.last.findMany({
+      skip: 10,
+      include: {
+        product: productInclude
+      }
+    })
+    return last.map(p => ({...p.product}))
   }
 
   static async create({ name, categoryId, price, stock, description, image }) {

@@ -19,5 +19,6 @@ router.delete('/:id/like/:productId', ClientController.deleteLike)
 router.get('/:id/favorite', ClientController.getFavorites)
 router.post('/:id/favorite/:productId', ClientController.postFavorite)
 router.delete('/:id/favorite/:productId', ClientController.deleteFavorite)
+router.get('/:id/notification', ClientController.getNotifications)
 
 module.exports = router

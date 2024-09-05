@@ -1,6 +1,7 @@
 const ClientModel = require('../../data/models/client.model')
 const OrderModel = require('../../data/models/order.model')
 const ProductModel = require('../../data/models/product.model')
+const SocketManager = require('../../data/clients/socket.manager')
 
 class ClientController {
 
@@ -224,6 +225,17 @@ class ClientController {
       const productId = parseInt(req.params.productId)
       const favorite = await ClientModel.deleteFavorite(id, productId)
       return res.json(favorite)
+    } catch (e) {
+      console.log(e)
+      return res.status(500).json({ message: 'Server error' })
+    }
+  }
+
+  static async getNotifications(req, res) {
+    try {
+      const id = parseInt(req.params.id)
+      const notifications = await ClientModel.findNotifications(id)
+      return res.json(notifications)
     } catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server error' })

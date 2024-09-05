@@ -10,6 +10,8 @@ async function sendEmail(to) {
     subject: 'hello world',
     html: '<p>Hello friend</p>'
   })
+
+  return { data, error }
 }
 
 module.exports = {

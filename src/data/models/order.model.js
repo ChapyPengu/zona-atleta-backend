@@ -11,9 +11,24 @@ class OrderModel {
     const order = await database.order.findFirst({
       where: {
         id
+      },
+      include: {
+        products: {
+          include: {
+            product: {
+              include: {
+                category: true
+              }
+            }
+          }
+        },
+        client: true
       }
     })
-    return order
+    return {
+      ...order,
+      products: order.products.map(p => ({ ...p.product, amount: p.amount }))
+    }
   }
 
   static async update(id, state, address) {
