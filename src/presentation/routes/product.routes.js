@@ -14,6 +14,6 @@ router.delete('/:id', ProductController.deleteById)
 router.put('/:id', ProductController.putById)
 router.post('/:id/comment', ProductController.postComment)
 router.post('/response', ProductController.postResponse)
-router.put('/response', ProductController.putResponse)
+router.put('/response/:id', ProductController.putResponse)
 
 module.exports = router

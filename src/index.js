@@ -18,7 +18,7 @@ async function createCategories() {
   return await database.category.createMany({
     data: [
       {
-        name: 'running'
+        name: 'botines'
       },
       {
         name: 'training'

@@ -80,7 +80,7 @@ class ProductModel {
     return product
   }
 
-  static async update(id, price, stock, available, timesBought) {
+  static async update(id, price, stock, available, timesBought, visits) {
     const product = await database.product.update({
       where: {
         id
@@ -89,7 +89,8 @@ class ProductModel {
         price,
         stock,
         available,
-        timesBought
+        timesBought,
+        visits
       },
       include: productInclude
     })

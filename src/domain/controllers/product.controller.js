@@ -50,6 +50,7 @@ class ProductController {
       const product = await ProductModel.findById(id)
       if (!product)
         return res.json({ message: 'Product not found' })
+      await ProductModel.update(id, undefined, undefined, undefined, undefined, product.visits + 1)
       return res.json(product)
     } catch (e) {
       console.log(e)
@@ -96,7 +97,6 @@ class ProductController {
   static async post(req, res) {
     try {
       const p = req.body
-      console.log(p)
       const category = await CategoryModel.findById(parseInt(p.categoryId))
       if (!category)
         return res.status(400).json({ message: 'Category not found' })
@@ -107,9 +107,11 @@ class ProductController {
       const product = await ProductModel.create({
         name: p.name,
         categoryId: parseInt(p.categoryId),
-        description: p.description,
-        price: parseInt(p.price),
-        stock: parseInt(p.stock),
+        // description: p.description,
+        // price: parseInt(p.price),
+        price: [44000, 49999, 79999, 11999, 59999, 83000, 28000, 99999][Math.floor(Math.random() * 8)],
+        // stock: parseInt(p.stock),
+        stock: 1000,
         image: image
       })
       return res.json(product)
