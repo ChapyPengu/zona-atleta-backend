@@ -159,7 +159,7 @@ class ClientController {
       const preference = await createPreference(items, order.id, res)
       console.log(preference)
 
-      return res.json({ order, ...preference })
+      return res.redirect(preference.redirectUrl)
     } catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server error' })
@@ -270,7 +270,7 @@ class ClientController {
 
       const preference = await createPreference(items, order.id, res)
       console.log(preference)
-      return res.json({ order, ...preference })
+      return res.redirect(preference.redirectUrl)
     } catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server error' })
