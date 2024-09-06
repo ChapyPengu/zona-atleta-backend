@@ -43,6 +43,20 @@ class OrderModel {
     })
     return order
   }
+
+
+  static async updateIDPayment(id, paymentId) {
+    const order = await database.order.update({
+      where: {
+        id
+      },
+      data: {
+        paymentId
+      }
+    })
+    return order
+  }
 }
+
 
 module.exports = OrderModel

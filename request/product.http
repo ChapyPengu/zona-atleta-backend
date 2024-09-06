@@ -15,9 +15,9 @@ content-type: application/json
 
 DELETE http://localhost:3000/api/product/2 HTTP/1.1
 
-PUT http://localhost:3000/api/product/2 HTTP/1.1
+PUT http://localhost:3000/api/product/1 HTTP/1.1
 content-type: application/json
 
 {
-    "price": 2200
+    "price": 0.5
 }

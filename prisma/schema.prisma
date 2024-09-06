@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
     provider = "prisma-client-js"
 }
@@ -27,36 +21,41 @@ model Client {
     email         String          @unique
     password      String
     image         String?
-    profile       Profile         @relation(fields: [profileId], references: [id])
     profileId     Int
+    profile       Profile         @relation(fields: [profileId], references: [id])
+    products      ClientProduct[]
+    favorites     Favorite[]
+    likes         Like[]
     notifications Notification[]
     orders        Order[]
-    products      ClientProduct[]
-    likes         Like[]
-    favorites     Favorite[]
+
+    @@index([profileId], map: "Client_profileId_fkey")
 }
 
 model Notification {
     id       Int      @id @default(autoincrement())
     message  String
     date     DateTime @default(now())
-    client   Client   @relation(fields: [clientId], references: [id])
     clientId Int
+    client   Client   @relation(fields: [clientId], references: [id])
+
+    @@index([clientId], map: "Notification_clientId_fkey")
 }
 
 model SalesManager {
     id        Int     @id @default(autoincrement())
     username  String
     password  String
-    profile   Profile @relation(fields: [profileId], references: [id])
     profileId Int
+    profile   Profile @relation(fields: [profileId], references: [id])
+
+    @@index([profileId], map: "SalesManager_profileId_fkey")
 }
 
 model Product {
     id          Int             @id @default(autoincrement())
     name        String
     categoryId  Int
-    category    Category        @relation(fields: [categoryId], references: [id])
     stock       Int
     price       Float
     description String?
@@ -64,26 +63,29 @@ model Product {
     available   Boolean         @default(true)
     timesBought Int             @default(0)
     visits      Int             @default(0)
+    clients     ClientProduct[]
+    comments    Comment[]
     discount    Discount?
+    favorites   Favorite[]
     last        Last?
     likes       Like[]
-    favorites   Favorite[]
-    comments    Comment[]
+    category    Category        @relation(fields: [categoryId], references: [id])
     orders      ProductOrder[]
-    clients     ClientProduct[]
+
+    @@index([categoryId], map: "Product_categoryId_fkey")
 }
 
 model Discount {
     id         Int     @id @default(autoincrement())
     percentage Int
-    product    Product @relation(fields: [productId], references: [id])
     productId  Int     @unique
+    product    Product @relation(fields: [productId], references: [id])
 }
 
 model Last {
     id        Int     @id @default(autoincrement())
-    product   Product @relation(fields: [productId], references: [id])
     productId Int     @unique
+    product   Product @relation(fields: [productId], references: [id])
 }
 
 model Category {
@@ -95,39 +97,43 @@ model Category {
 model Comment {
     id        Int       @id @default(autoincrement())
     message   String
-    product   Product   @relation(fields: [productId], references: [id])
     productId Int
+    product   Product   @relation(fields: [productId], references: [id])
     response  Response?
+
+    @@index([productId], map: "Comment_productId_fkey")
 }
 
 model Response {
     id        Int     @id @default(autoincrement())
     message   String
-    comment   Comment @relation(fields: [commentId], references: [id])
     commentId Int     @unique
+    comment   Comment @relation(fields: [commentId], references: [id])
 }
 
 model Order {
     id            Int            @id @default(autoincrement())
     paymentMethod String
-    paymentId     String
+    paymentId     String?
     address       String
     date          DateTime       @default(now())
-    state         String         @default("pendiente")
-    client        Client         @relation(fields: [clientId], references: [id])
+    state         String         @default("pendiente de pago")
     clientId      Int
+    client        Client         @relation(fields: [clientId], references: [id])
     products      ProductOrder[]
+
+    @@index([clientId], map: "Order_clientId_fkey")
 }
 
-// Una lista de ClientProduct donde la clave del cliente es igual, es la abstraccion del carrito de compras
 model ClientProduct {
     clientId  Int
     productId Int
+    amount    Int
     client    Client  @relation(fields: [clientId], references: [id])
     product   Product @relation(fields: [productId], references: [id])
-    amount    Int
 
     @@id([clientId, productId])
+    @@index([productId], map: "ClientProduct_productId_fkey")
 }
 
 model Favorite {
@@ -137,6 +143,7 @@ model Favorite {
     product   Product @relation(fields: [productId], references: [id])
 
     @@id([clientId, productId])
+    @@index([productId], map: "Favorite_productId_fkey")
 }
 
 model Like {
@@ -146,15 +153,16 @@ model Like {
     product   Product @relation(fields: [productId], references: [id])
 
     @@id([clientId, productId])
+    @@index([productId], map: "Like_productId_fkey")
 }
 
-// Una lista de ProductOrder donde la clave de el pedido es igual, es la abstraccion los productos del pedido
 model ProductOrder {
     productId Int
     orderId   Int
+    amount    Int
     order     Order   @relation(fields: [orderId], references: [id])
     product   Product @relation(fields: [productId], references: [id])
-    amount    Int
 
     @@id([productId, orderId])
+    @@index([orderId], map: "ProductOrder_orderId_fkey")
 }

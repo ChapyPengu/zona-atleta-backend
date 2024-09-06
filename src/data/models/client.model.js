@@ -183,12 +183,13 @@ class ClientModel {
     return orders
   }
 
-  static async createOrder(id, paymentMethod, paymentId, address, products) {
+  static async createOrder(id, paymentMethod, paymentId, address, state, products) {
     const order = await database.order.create({
       data: {
         paymentMethod,
         paymentId,
         address,
+        state,
         clientId: id,
         products: {
           create: products
@@ -200,12 +201,15 @@ class ClientModel {
   }
 
   static async deleteProduct(id, productId) {
+    console.log(id, productId)
     const product = await database.clientProduct.delete({
       where: {
-        productId_clientId: {
+        clientId_productId: {
           clientId: id,
           productId
-        }
+        },
+        clientId: id,
+        productId
       },
       include: clientProductInclude
     })
@@ -222,12 +226,15 @@ class ClientModel {
   }
 
   static async updateProduct(id, productId, amount) {
+    console.log(id, productId, amount)
     const product = await database.clientProduct.update({
       where: {
-        productId_clientId: {
+        clientId_productId: {
           clientId: id,
           productId
-        }
+        },
+        clientId: id,
+        productId
       },
       data: {
         amount
