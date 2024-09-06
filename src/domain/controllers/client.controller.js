@@ -75,6 +75,7 @@ class ClientController {
     try {
       const id = parseInt(req.params.id)
       const products = await ClientModel.findProducts(id)
+      console.log(products)
       return res.json(products)
     } catch (e) {
       console.log(e)

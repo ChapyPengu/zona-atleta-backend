@@ -79,6 +79,8 @@ class AuthController {
 
     const { id, profile } = await verifyAccesToken(token)
 
+    console.log(id, profile)
+    
     if (profile.id === PROFILES.CLIENT) {
 
       const client = await ClientModel.findById(id)
