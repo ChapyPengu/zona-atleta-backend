@@ -6,8 +6,44 @@ const productInclude = {
 
 class ProductModel {
 
+  static async findByOffsetAndLimit(offset, limit) {
+    const products = await database.product.findMany({
+      skip: offset,
+      take: limit,
+      include: productInclude
+    })
+    return products
+  }
+
   static async findMany() {
     const products = await database.product.findMany({
+      take: 50,
+      include: productInclude
+    })
+    return products
+  }
+
+  static async findManyByCategory(name) {
+    const category = await database.category.findFirst({
+      where: {
+        name: name
+      },
+      include: {
+        products: {
+          include: productInclude
+        }
+      }
+    })
+    return category.products
+  }
+
+  static async findManyByName(name) {
+    const products = await database.product.findMany({
+      where: {
+        name: {
+          contains: name.toLowerCase()
+        }
+      },
       include: productInclude
     })
     return products
@@ -41,7 +77,7 @@ class ProductModel {
         product: productInclude
       }
     })
-    return discounts.map(p => ({...p.product, percentage: p.percentage}))
+    return discounts.map(p => ({ ...p.product, percentage: p.percentage }))
   }
 
   static async findManyPopular() {
@@ -62,7 +98,7 @@ class ProductModel {
         product: productInclude
       }
     })
-    return last.map(p => ({...p.product}))
+    return last.map(p => ({ ...p.product }))
   }
 
   static async create({ name, categoryId, price, stock, description, image }) {

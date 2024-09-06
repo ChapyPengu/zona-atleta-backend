@@ -18,34 +18,28 @@ async function createCategories() {
   return await database.category.createMany({
     data: [
       {
-        name: 'botines'
-      },
-      {
-        name: 'training'
-      },
-      {
-        name: 'moda'
-      },
-      {
-        name: 'futbol'
-      },
-      {
-        name: 'rugby'
-      },
-      {
-        name: 'voley'
-      },
-      {
         name: 'hockey'
-      },
-      {
-        name: 'basquet'
       },
       {
         name: 'tenis'
       },
       {
-        name: 'padel'
+        name: 'moda'
+      },
+      {
+        name: 'training'
+      },
+      {
+        name: 'natacion'
+      },
+      {
+        name: 'running'
+      },
+      {
+        name: 'basquet'
+      },
+      {
+        name: 'futbol'
       }
     ]
   })

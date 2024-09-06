@@ -75,7 +75,7 @@ class ClientController {
     try {
       const id = parseInt(req.params.id)
       const products = await ClientModel.findProducts(id)
-      console.log(products)
+      // console.log(products)
       return res.json(products)
     } catch (e) {
       console.log(e)
@@ -159,7 +159,7 @@ class ClientController {
       const preference = await createPreference(items, order.id, res)
       console.log(preference)
 
-      return res.redirect(preference.redirectUrl)
+      return res.json({ order, ...preference })
     } catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server error' })
@@ -270,7 +270,7 @@ class ClientController {
 
       const preference = await createPreference(items, order.id, res)
       console.log(preference)
-      return res.redirect(preference.redirectUrl)
+      return res.json({ order, ...preference })
     } catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server error' })
@@ -316,8 +316,19 @@ class ClientController {
     try {
       const id = parseInt(req.params.id)
       const productId = parseInt(req.params.productId)
-      const favorite = await ClientModel.createFavorite(id, productId)
-      return res.json(favorite)
+      const favoriteFound = await ClientModel.findFavorites(id)
+      let found = false
+      for (const fav of favoriteFound) {
+        if (fav.productId === productId) {
+          found = true
+        }
+      }
+      if (found) {
+        return res.json({})
+      } else {
+        const favorite = await ClientModel.createFavorite(id, productId)
+        return res.json(favorite)
+      }
     } catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server error' })

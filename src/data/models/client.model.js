@@ -273,7 +273,7 @@ class ClientModel {
       },
       include: favoriteInclude
     })
-    return favorite
+    return favorite.map(f => ({...f.product}))
   }
 
   static async createFavorite(id, productId) {

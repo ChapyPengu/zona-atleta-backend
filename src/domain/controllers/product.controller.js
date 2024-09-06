@@ -32,9 +32,48 @@ class ProductController {
   //   }
   // }
 
+  static async getPage(req, res) {
+    try {
+      const { offset, limit } = req.params
+      const products = await ProductModel.findByOffsetAndLimit(parseInt(offset), parseInt(limit))
+      if (products.length === 0)
+        return res.status(400).json({ message: 'No hay productos' })
+      return res.json(products)
+    } catch (e) {
+      console.log(e)
+      return res.status(500).json({ message: 'Server Error' })
+    }
+  }
+
   static async getAll(req, res) {
     try {
       const products = await ProductModel.findMany()
+      if (products.length === 0)
+        return res.status(400).json({ message: 'No hay productos' })
+      return res.json(products)
+    } catch (e) {
+      console.log(e)
+      return res.status(500).json({ message: 'Server Error' })
+    }
+  }
+
+  static async getByCategory(req, res) {
+    try {
+      const name = req.params.name
+      const products = await ProductModel.findManyByCategory(name)
+      if (products.length === 0)
+        return res.status(400).json({ message: 'No hay productos' })
+      return res.json(products)
+    } catch (e) {
+      console.log(e)
+      return res.status(500).json({ message: 'Server Error' })
+    }
+  }
+
+  static async getByName(req, res) {
+    try {
+      const name = req.params.name
+      const products = await ProductModel.findManyByName(name)
       if (products.length === 0)
         return res.status(400).json({ message: 'No hay productos' })
       return res.json(products)

@@ -15,5 +15,8 @@ router.put('/:id', ProductController.putById)
 router.post('/:id/comment', ProductController.postComment)
 router.post('/response', ProductController.postResponse)
 router.put('/response/:id', ProductController.putResponse)
+router.get('/category/:name', ProductController.getByCategory)
+router.get('/name/:name', ProductController.getByName)
+router.get('/page/:offset/:limit', ProductController.getPage)
 
 module.exports = router
