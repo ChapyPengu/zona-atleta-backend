@@ -1,13 +1,11 @@
 const express = require('express')
 const http = require('http')
 const { Server: SocketServer } = require('socket.io')
-
 const cors = require('cors')
 const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
 const multer = require('multer')
 const path = require('path')
-
 const authRoutes = require('./routes/auth.routes')
 const productRoutes = require('./routes/product.routes')
 const categoryRoutes = require('./routes/category.routes')

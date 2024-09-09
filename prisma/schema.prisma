@@ -23,13 +23,22 @@ model Client {
     image         String?
     profileId     Int
     profile       Profile         @relation(fields: [profileId], references: [id])
+    chatId        Int             @unique
+    chat          Chat            @relation(fields: [chatId], references: [id])
     products      ClientProduct[]
     favorites     Favorite[]
     likes         Like[]
     notifications Notification[]
     orders        Order[]
+    Comment       Comment[]
 
     @@index([profileId], map: "Client_profileId_fkey")
+}
+
+model Chat {
+    id Int @id @default(autoincrement())
+
+    Client Client?
 }
 
 model Notification {
@@ -44,7 +53,7 @@ model Notification {
 
 model SalesManager {
     id        Int     @id @default(autoincrement())
-    username  String
+    username  String  @unique
     password  String
     profileId Int
     profile   Profile @relation(fields: [profileId], references: [id])
@@ -97,6 +106,9 @@ model Category {
 model Comment {
     id        Int       @id @default(autoincrement())
     message   String
+    date      DateTime  @default(now())
+    clientId  Int
+    client    Client    @relation(fields: [clientId], references: [id])
     productId Int
     product   Product   @relation(fields: [productId], references: [id])
     response  Response?
@@ -105,10 +117,11 @@ model Comment {
 }
 
 model Response {
-    id        Int     @id @default(autoincrement())
+    id        Int      @id @default(autoincrement())
     message   String
-    commentId Int     @unique
-    comment   Comment @relation(fields: [commentId], references: [id])
+    date      DateTime @default(now())
+    commentId Int      @unique
+    comment   Comment  @relation(fields: [commentId], references: [id])
 }
 
 model Order {
@@ -117,7 +130,7 @@ model Order {
     paymentId     String?
     address       String
     date          DateTime       @default(now())
-    state         String         @default("pendiente de pago")
+    state         String         @default("pendiente de pago") // Pendiente de pago, pago aprobado, entregado
     clientId      Int
     client        Client         @relation(fields: [clientId], references: [id])
     products      ProductOrder[]

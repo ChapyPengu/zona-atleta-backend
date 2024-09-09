@@ -43,21 +43,10 @@ class ClientModel {
     return client
   }
 
-  static async findByUsernameAndPassword(username, password) {
+  static async findByUsername(username) {
     const client = await database.client.findFirst({
       where: {
-        AND: [
-          {
-            username: {
-              equals: username
-            }
-          },
-          {
-            password: {
-              equals: password
-            }
-          }
-        ]
+        username
       },
       include: clientInclude
     })
@@ -108,14 +97,16 @@ class ClientModel {
     return client
   }
 
-  static async update(id, username, password) {
+  static async update(id, username, email, password, image) {
     const client = await database.client.update({
       where: {
         id
       },
       data: {
         username,
-        password
+        email,
+        password,
+        image
       },
       include: clientInclude
     })

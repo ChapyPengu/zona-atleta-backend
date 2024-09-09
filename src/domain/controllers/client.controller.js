@@ -2,6 +2,7 @@ const ClientModel = require('../../data/models/client.model')
 const OrderModel = require('../../data/models/order.model')
 const ProductModel = require('../../data/models/product.model')
 const SocketManager = require('../../data/clients/socket.manager')
+const { hash, compare } = require('../libs/bcrypt')
 
 const { MercadoPagoConfig, Preference, Payment, PaymentRefund } = require('mercadopago');
 
@@ -59,11 +60,34 @@ class ClientController {
     }
   }
 
+  static async postConfirm(req, res) {
+    try {
+      const id = parseInt(req.params.id)
+      const { password } = req.body
+      const clientFound = await ClientModel.findById(id)
+      const match = await compare(password, clientFound.password)
+      if (!match) return res.json({ message: 'Contraseña Incorrecta!' })
+      return res.json({ message: 'OK' })
+    } catch (e) {
+      console.log(e)
+      return res.status(500).json({ message: 'Server error' })
+    }
+  }
+
   static async putById(req, res) {
     try {
       const id = parseInt(req.params.id)
-      const { username, password } = req.body
-      const client = await ClientModel.update(id, username, password)
+      const { username, email, password, newPassword } = req.body
+      const clientFound = await ClientModel.findById(id)
+      const match = await compare(password, clientFound.password)
+      if (!match) return res.json({ message: 'Contraseña Incorrecta' })
+      let client
+      if (newPassword) {
+        const encrypt = await hash(newPassword)
+        client = await ClientModel.update(id, username, email, encrypt)
+      } else {
+        client = await ClientModel.update(id, username, email, newPassword)
+      }
       return res.json(client)
     } catch (e) {
       console.log(e)
@@ -149,12 +173,16 @@ class ClientController {
       // Termina el codigo de Rodri
       const state = "pendiente de pago"
       const order = await ClientModel.createOrder(id, paymentMethod, paymentId, address, state, productFormat)
+      console.log({
+        stock: productFound.stock - amount,
+        timesBought: productFound.timesBought + 1
+      })
       const updatedProduct = await ProductModel.update(
         productFound.id,
-        undefined,
-        productFound.stock - amount,
-        undefined,
-        productFound.timesBought + 1
+        {
+          stock: productFound.stock - amount,
+          timesBought: productFound.timesBought + 1
+        }
       )
       const preference = await createPreference(items, order.id, res)
       console.log(preference)
@@ -260,10 +288,10 @@ class ClientController {
         // Actualiza los datos de todos los productos de la compra
         const updatedProduct = await ProductModel.update(
           cp.id,
-          undefined,
-          cp.stock - cp.amount,
-          undefined,
-          cp.timesBought + 1
+          {
+            stock: cp.stock - cp.amount,
+            timesBought: cp.timesBought + 1
+          }
         )
       }
       const shoppingCart = await ClientModel.deleteManyProduct(id) // Elimina los productos que estaban en el carrito de compras

@@ -66,6 +66,7 @@ async function main() {
 }
 
 // main()
+// database.salesManager.findFirst().then(res => console.log(res))
 
 const PORT = process.env.PORT ?? 3000
 

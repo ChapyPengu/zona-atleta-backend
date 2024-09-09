@@ -1,104 +1,107 @@
 const database = require('../database/database')
+const ProductInterface = require('../interfaces/product')
+const ProductDetailsInterface = require('../interfaces/product.details')
+const DiscountedProduct = require('../interfaces/discounted.product')
+const LastProduct = require('../interfaces/last.product')
 
-const productInclude = {
-  category: true
+const includeProductDetails = {
+  category: true,
+  comments: {
+    include: {
+      response: true
+    }
+  },
+  likes: true,
+  favorites: true
+}
+
+const includeDiscountedProduct = {
+  product: true
+}
+
+const includeLastProduct = {
+  product: true
 }
 
 class ProductModel {
 
-  static async findByOffsetAndLimit(offset, limit) {
+  static async count() {
+    return await database.product.count()
+  }
+
+  static async findMany(offset, limit) {
+    const products = await database.product.findMany({
+      skip: offset,
+      take: limit
+    })
+    return products.map(p => new ProductInterface(p))
+  }
+
+  static async findManyDiscount(offset, limit) {
+    const discounts = await database.discount.findMany({
+      skip: offset,
+      take: limit,
+      include: includeDiscountedProduct
+    })
+    return discounts.map(d => new DiscountedProduct(d))
+  }
+
+  static async findManyPopular(offset, limit) {
     const products = await database.product.findMany({
       skip: offset,
       take: limit,
-      include: productInclude
+      orderBy: {
+        visits: 'desc'
+      }
     })
-    return products
+    return products.map(p => new ProductInterface(p))
   }
 
-  static async findMany() {
-    const products = await database.product.findMany({
-      take: 50,
-      include: productInclude
+  static async findManyLast(offset, limit) {
+    const last = await database.last.findMany({
+      skip: offset,
+      take: limit,
+      include: includeLastProduct
     })
-    return products
+    return last.map(l => new LastProduct(l))
   }
 
-  static async findManyByCategory(name) {
-    const category = await database.category.findFirst({
+  static async findManyByCategory(name, offset, limit) {
+    const products = await database.product.findFirst({
+      skip: offset,
+      take: limit,
       where: {
-        name: name
-      },
-      include: {
-        products: {
-          include: productInclude
+        category: {
+          name
         }
       }
     })
-    return category.products
+    return products.map(p => new ProductInterface(p))
   }
 
-  static async findManyByName(name) {
+  static async findManyByName(name, offset, limit) {
     const products = await database.product.findMany({
+      skip: offset,
+      take: limit,
       where: {
         name: {
-          contains: name.toLowerCase()
+          contains: name
         }
-      },
-      include: productInclude
+      }
     })
-    return products
-  }
-
-  static async findByFilters(search = {}, offset = 0, limit = 15) {
-    const products = await database.product.findMany({})
-    return products
+    return products.map(p => new ProductInterface(p))
   }
 
   static async findById(id) {
-    const product = await database.product.findFirst({
+    const p = await database.product.findFirst({
       where: {
         id
       },
-      include: {
-        category: true,
-        comments: {
-          include: {
-            response: true
-          }
-        }
-      }
+      include: includeProductDetails
     })
-    return product
-  }
-
-  static async findManyDiscount() {
-    const discounts = await database.discount.findMany({
-      include: {
-        product: productInclude
-      }
-    })
-    return discounts.map(p => ({ ...p.product, percentage: p.percentage }))
-  }
-
-  static async findManyPopular() {
-    const products = await database.product.findMany({
-      skip: 10,
-      orderBy: {
-        visits: true
-      },
-      include: productInclude
-    })
-    return products
-  }
-
-  static async findManyLast() {
-    const last = await database.last.findMany({
-      skip: 10,
-      include: {
-        product: productInclude
-      }
-    })
-    return last.map(p => ({ ...p.product }))
+    if (!p)
+      return p
+    return new ProductDetailsInterface(p)
   }
 
   static async create({ name, categoryId, price, stock, description, image }) {
@@ -109,43 +112,37 @@ class ProductModel {
         price,
         stock,
         description,
-        image
-      },
-      include: productInclude
+        image,
+        last: {
+          create: {}
+        }
+      }
     })
-    return product
+    return new ProductInterface(product)
   }
 
-  static async update(id, price, stock, available, timesBought, visits) {
+  static async update(id, { name, price, stock, available, timesBought, visits, image }) {
     const product = await database.product.update({
       where: {
         id
       },
       data: {
+        name,
         price,
         stock,
         available,
         timesBought,
-        visits
-      },
-      include: productInclude
+        visits,
+        image
+      }
     })
-    return product
+    return new ProductDetailsInterface(product)
   }
 
-  static async delete(id) {
-    const product = await database.product.delete({
-      where: {
-        id
-      },
-      include: productInclude
-    })
-    return product
-  }
-
-  static async createComment(productId, message) {
+  static async createComment(clientId, productId, message) {
     const comment = await database.comment.create({
       data: {
+        clientId,
         productId,
         message
       }

@@ -1,56 +1,52 @@
 const ProductModel = require('../../data/models/product.model')
 const CategoryModel = require('../../data/models/category.model')
 
-class ProductController {
+const BACKEND_URL = process.env.BACKEND_URL
+// const BACKEND_URL = 'https://zona-atleta-backend-production.up.railway.app'
 
-  // static async getAllByFilters(req, res) {
-  //   try {
-  //     const search = {}
-  //     const { name, category, min, max } = req.query
-  //     if (name) {
-  //       search.name = name
-  //     }
-  //     if (category) {
-  //       search.category = category
-  //     }
+function formatQuery(query) {
+  let offset = parseInt(query.offset)
+  let limit = parseInt(query.limit)
+  if (isNaN(offset) || offset < 0) {
+    offset = 0
+  }
+  if (isNaN(limit) || limit < 0) {
+    limit = 20
+  }
+  return {
+    offset,
+    limit
+  }
+}
 
-  //     if (category) {
-  //       search.max = max
-  //     }
-
-  //     if (category) {
-  //       search.min = min
-  //     }
-
-  //     const products = await ProductModel.findByFilters(search)
-  //     if (products.length === 0)
-  //       return res.status(400).json({ message: 'No hay productos' })
-  //     return res.json(products)
-  //   } catch (e) {
-  //     console.log(e)
-  //     return res.status(500).json({ message: 'Server Error' })
-  //   }
-  // }
-
-  static async getPage(req, res) {
-    try {
-      const { offset, limit } = req.params
-      const products = await ProductModel.findByOffsetAndLimit(parseInt(offset), parseInt(limit))
-      if (products.length === 0)
-        return res.status(400).json({ message: 'No hay productos' })
-      return res.json(products)
-    } catch (e) {
-      console.log(e)
-      return res.status(500).json({ message: 'Server Error' })
+function urls(entity, count, offset, limit) {
+  let previous = null
+  let next = null
+  if (offset !== 0) {
+    if ((offset - limit < 0) && (offset > 0)) {
+      previous = `${BACKEND_URL}/api/${entity}?offset=${0}&limit=${offset}`
+    } else if (offset - limit >= 0) {
+      previous = `${BACKEND_URL}/api/${entity}?offset=${offset - limit}&limit=${limit}`
     }
   }
+  if (offset + limit <= count) {
+    next = `${BACKEND_URL}/api/${entity}?offset=${offset + limit}&limit=${limit}`
+  }
+  return {
+    previous,
+    next
+  }
+}
 
-  static async getAll(req, res) {
+class ProductController {
+
+  static async get(req, res) {
     try {
-      const products = await ProductModel.findMany()
-      if (products.length === 0)
-        return res.status(400).json({ message: 'No hay productos' })
-      return res.json(products)
+      const { offset, limit } = formatQuery(req.query)
+      const count = await ProductModel.count()
+      const { previous, next } = urls('product', count, offset, limit)
+      const results = await ProductModel.findMany(offset, limit)
+      return res.json({ count, previous, next, results })
     } catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server Error' })
@@ -61,8 +57,6 @@ class ProductController {
     try {
       const name = req.params.name
       const products = await ProductModel.findManyByCategory(name)
-      if (products.length === 0)
-        return res.status(400).json({ message: 'No hay productos' })
       return res.json(products)
     } catch (e) {
       console.log(e)
@@ -74,8 +68,6 @@ class ProductController {
     try {
       const name = req.params.name
       const products = await ProductModel.findManyByName(name)
-      if (products.length === 0)
-        return res.status(400).json({ message: 'No hay productos' })
       return res.json(products)
     } catch (e) {
       console.log(e)
@@ -88,8 +80,8 @@ class ProductController {
       const id = parseInt(req.params.id)
       const product = await ProductModel.findById(id)
       if (!product)
-        return res.json({ message: 'Product not found' })
-      await ProductModel.update(id, undefined, undefined, undefined, undefined, product.visits + 1)
+        return res.status(404).json({ message: 'Product not found' })
+      await ProductModel.update(id, { visits: product.visits + 1 })
       return res.json(product)
     } catch (e) {
       console.log(e)
@@ -99,10 +91,8 @@ class ProductController {
 
   static async getDiscount(req, res) {
     try {
-      const products = await ProductModel.findManyDiscount()
-      if (products.length === 0)
-        return res.status(400).json({ message: 'No hay productos' })
-      return res.json(products)
+      const results = await ProductModel.findManyDiscount(0, 6)
+      return res.json({ results })
     } catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server Error' })
@@ -111,10 +101,8 @@ class ProductController {
 
   static async getPopular(req, res) {
     try {
-      const products = await ProductModel.findManyPopular()
-      if (products.length === 0)
-        return res.status(400).json({ message: 'No hay productos' })
-      return res.json(products)
+      const results = await ProductModel.findManyPopular(0, 5)
+      return res.json({ results })
     } catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server Error' })
@@ -123,10 +111,8 @@ class ProductController {
 
   static async getLast(req, res) {
     try {
-      const products = await ProductModel.findManyLast()
-      if (products.length === 0)
-        return res.status(400).json({ message: 'No hay productos' })
-      return res.json(products)
+      const results = await ProductModel.findManyLast(0, 7)
+      return res.json({ results })
     } catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server Error' })
@@ -139,6 +125,7 @@ class ProductController {
       const category = await CategoryModel.findById(parseInt(p.categoryId))
       if (!category)
         return res.status(400).json({ message: 'Category not found' })
+
       let image = undefined
       if (req.file) {
         image = "/uploads/" + req.file.filename
@@ -146,11 +133,9 @@ class ProductController {
       const product = await ProductModel.create({
         name: p.name,
         categoryId: parseInt(p.categoryId),
-        // description: p.description,
-        // price: parseInt(p.price),
-        price: [44000, 49999, 79999, 11999, 59999, 83000, 28000, 99999][Math.floor(Math.random() * 8)],
-        // stock: parseInt(p.stock),
-        stock: 1000,
+        description: p.description,
+        price: parseInt(p.price),
+        stock: parseInt(p.stock),
         image: image
       })
       return res.json(product)
@@ -175,7 +160,7 @@ class ProductController {
     try {
       const id = parseInt(req.params.id)
       const { price, stock, available, timesBought } = req.body
-      const product = await ProductModel.update(id, price, stock, available, timesBought)
+      const product = await ProductModel.update(id, { price, stock, available, timesBought })
       return res.json(product)
     } catch (e) {
       console.log(e)

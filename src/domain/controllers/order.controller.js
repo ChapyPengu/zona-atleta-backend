@@ -32,10 +32,10 @@ class OrderController {
       const { state, address } = req.body
       const order = await OrderModel.update(id, state, address)
       const comment = await ClientModel.createNotification(order.clientId, `Su pedido esta en camino`)
-      const socket = SocketManager.findClientById(order.clientId).socket
-      if (socket && state === 'confirmado') {
-        socket.emit('notification', { message: comment.message, date: comment.date })
-      }
+      // const socket = SocketManager.findClientById(order.clientId).socket
+      // if (socket && state === 'confirmado') {
+      //   socket.emit('notification', { message: comment.message, date: comment.date })
+      // }
       return res.json(order)
     } catch (e) {
       console.log(e)
