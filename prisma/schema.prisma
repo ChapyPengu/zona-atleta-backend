@@ -23,8 +23,8 @@ model Client {
     image         String?
     profileId     Int
     profile       Profile         @relation(fields: [profileId], references: [id])
-    chatId        Int             @unique
-    chat          Chat            @relation(fields: [chatId], references: [id])
+    // chatId        Int             @unique
+    // chat          Chat            @relation(fields: [chatId], references: [id])
     products      ClientProduct[]
     favorites     Favorite[]
     likes         Like[]
@@ -35,11 +35,11 @@ model Client {
     @@index([profileId], map: "Client_profileId_fkey")
 }
 
-model Chat {
-    id Int @id @default(autoincrement())
+// model Chat {
+//     id Int @id @default(autoincrement())
 
-    Client Client?
-}
+//     Client Client?
+// }
 
 model Notification {
     id       Int      @id @default(autoincrement())

@@ -48,6 +48,7 @@ class ClientModel {
       where: {
         username
       },
+
       include: clientInclude
     })
     return client
@@ -120,7 +121,7 @@ class ClientModel {
       },
       include: clientProductInclude
     })
-    return products.map(p => ({...p.product, amount: p.amount}))
+    return products.map(p => ({ ...p.product, amount: p.amount }))
   }
 
   static async createProduct(id, productId, amount) {
@@ -264,7 +265,7 @@ class ClientModel {
       },
       include: favoriteInclude
     })
-    return favorite.map(f => ({...f.product}))
+    return favorite.map(f => ({ ...f.product }))
   }
 
   static async createFavorite(id, productId) {
