@@ -1,4 +1,5 @@
 const database = require('../database/database')
+const Order = require('../interfaces/order')
 
 class OrderModel {
 
@@ -39,9 +40,16 @@ class OrderModel {
       data: {
         state,
         address
+      },
+      include: {
+        products: {
+          include: {
+            product: true
+          }
+        }
       }
     })
-    return order
+    return new Order(order)
   }
 
 

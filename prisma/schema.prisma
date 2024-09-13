@@ -15,6 +15,11 @@ model Profile {
     managers SalesManager[]
 }
 
+model Chat {
+    id     Int     @id @default(autoincrement())
+    Client Client?
+}
+
 model Client {
     id            Int             @id @default(autoincrement())
     username      String          @unique
@@ -23,23 +28,15 @@ model Client {
     image         String?
     profileId     Int
     profile       Profile         @relation(fields: [profileId], references: [id])
-    // chatId        Int             @unique
-    // chat          Chat            @relation(fields: [chatId], references: [id])
+    chatId        Int             @unique
+    chat          Chat            @relation(fields: [chatId], references: [id])
     products      ClientProduct[]
     favorites     Favorite[]
     likes         Like[]
     notifications Notification[]
     orders        Order[]
     Comment       Comment[]
-
-    @@index([profileId], map: "Client_profileId_fkey")
 }
-
-// model Chat {
-//     id Int @id @default(autoincrement())
-
-//     Client Client?
-// }
 
 model Notification {
     id       Int      @id @default(autoincrement())
@@ -47,8 +44,6 @@ model Notification {
     date     DateTime @default(now())
     clientId Int
     client   Client   @relation(fields: [clientId], references: [id])
-
-    @@index([clientId], map: "Notification_clientId_fkey")
 }
 
 model SalesManager {
@@ -57,14 +52,13 @@ model SalesManager {
     password  String
     profileId Int
     profile   Profile @relation(fields: [profileId], references: [id])
-
-    @@index([profileId], map: "SalesManager_profileId_fkey")
 }
 
 model Product {
     id          Int             @id @default(autoincrement())
     name        String
     categoryId  Int
+    gender      String          @default("unisex")
     stock       Int
     price       Float
     description String?
@@ -80,8 +74,6 @@ model Product {
     likes       Like[]
     category    Category        @relation(fields: [categoryId], references: [id])
     orders      ProductOrder[]
-
-    @@index([categoryId], map: "Product_categoryId_fkey")
 }
 
 model Discount {
@@ -112,8 +104,6 @@ model Comment {
     productId Int
     product   Product   @relation(fields: [productId], references: [id])
     response  Response?
-
-    @@index([productId], map: "Comment_productId_fkey")
 }
 
 model Response {
@@ -134,8 +124,6 @@ model Order {
     clientId      Int
     client        Client         @relation(fields: [clientId], references: [id])
     products      ProductOrder[]
-
-    @@index([clientId], map: "Order_clientId_fkey")
 }
 
 model ClientProduct {
@@ -146,7 +134,6 @@ model ClientProduct {
     product   Product @relation(fields: [productId], references: [id])
 
     @@id([clientId, productId])
-    @@index([productId], map: "ClientProduct_productId_fkey")
 }
 
 model Favorite {
@@ -156,7 +143,6 @@ model Favorite {
     product   Product @relation(fields: [productId], references: [id])
 
     @@id([clientId, productId])
-    @@index([productId], map: "Favorite_productId_fkey")
 }
 
 model Like {
@@ -166,7 +152,6 @@ model Like {
     product   Product @relation(fields: [productId], references: [id])
 
     @@id([clientId, productId])
-    @@index([productId], map: "Like_productId_fkey")
 }
 
 model ProductOrder {
@@ -177,5 +162,4 @@ model ProductOrder {
     product   Product @relation(fields: [productId], references: [id])
 
     @@id([productId, orderId])
-    @@index([orderId], map: "ProductOrder_orderId_fkey")
 }

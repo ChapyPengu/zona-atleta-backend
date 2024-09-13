@@ -1,5 +1,4 @@
-// const BACKEND_URL = process.env.BACKEND_URL
-const BACKEND_URL = 'https://zona-atleta-backend-production.up.railway.app'
+const BACKEND_URL = process.env.BACKEND_URL
 
 class LastProduct {
 

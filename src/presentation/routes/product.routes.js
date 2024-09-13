@@ -5,7 +5,7 @@ const ValidatorToken = require('../../domain/middlewares/validator.token')
 const router = Router()
 
 router.get('/', ProductController.get)
-router.get('/:id', ProductController.getById)
+router.post('/:id', ProductController.getById) // E pekado tio
 router.get('/from/discount', ProductController.getDiscount)
 router.get('/from/popular', ProductController.getPopular)
 router.get('/from/last', ProductController.getLast)

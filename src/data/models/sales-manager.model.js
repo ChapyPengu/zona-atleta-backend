@@ -2,6 +2,32 @@ const database = require('../database/database')
 
 class SalesManagerModel {
 
+  static async create(username, password) {
+    const salesManager = await database.salesManager.create({
+      data: {
+        username,
+        password,
+        profileId: 2
+      },
+      include: {
+        profile: true
+      }
+    })
+    return salesManager
+  }
+
+  static async findByUsername(username) {
+    const fonud = await database.salesManager.findFirst({
+      where: {
+        username
+      },
+      include: {
+        profile: true
+      }
+    })
+    return fonud
+  }
+
   static async findOne({ username, password }) {
     const fonud = await database.salesManager.findFirst({
       where: {

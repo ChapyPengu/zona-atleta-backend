@@ -19,7 +19,6 @@ CREATE TABLE `Client` (
     UNIQUE INDEX `Client_username_key`(`username`),
     UNIQUE INDEX `Client_email_key`(`email`),
     UNIQUE INDEX `Client_chatId_key`(`chatId`),
-    INDEX `Client_profileId_fkey`(`profileId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -37,7 +36,6 @@ CREATE TABLE `Notification` (
     `date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `clientId` INTEGER NOT NULL,
 
-    INDEX `Notification_clientId_fkey`(`clientId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -49,7 +47,6 @@ CREATE TABLE `SalesManager` (
     `profileId` INTEGER NOT NULL,
 
     UNIQUE INDEX `SalesManager_username_key`(`username`),
-    INDEX `SalesManager_profileId_fkey`(`profileId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -66,7 +63,6 @@ CREATE TABLE `Product` (
     `timesBought` INTEGER NOT NULL DEFAULT 0,
     `visits` INTEGER NOT NULL DEFAULT 0,
 
-    INDEX `Product_categoryId_fkey`(`categoryId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -105,7 +101,6 @@ CREATE TABLE `Comment` (
     `clientId` INTEGER NOT NULL,
     `productId` INTEGER NOT NULL,
 
-    INDEX `Comment_productId_fkey`(`productId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -130,7 +125,6 @@ CREATE TABLE `Order` (
     `state` VARCHAR(191) NOT NULL DEFAULT 'pendiente de pago',
     `clientId` INTEGER NOT NULL,
 
-    INDEX `Order_clientId_fkey`(`clientId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -140,7 +134,6 @@ CREATE TABLE `ClientProduct` (
     `productId` INTEGER NOT NULL,
     `amount` INTEGER NOT NULL,
 
-    INDEX `ClientProduct_productId_fkey`(`productId`),
     PRIMARY KEY (`clientId`, `productId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -149,7 +142,6 @@ CREATE TABLE `Favorite` (
     `clientId` INTEGER NOT NULL,
     `productId` INTEGER NOT NULL,
 
-    INDEX `Favorite_productId_fkey`(`productId`),
     PRIMARY KEY (`clientId`, `productId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -158,7 +150,6 @@ CREATE TABLE `Like` (
     `clientId` INTEGER NOT NULL,
     `productId` INTEGER NOT NULL,
 
-    INDEX `Like_productId_fkey`(`productId`),
     PRIMARY KEY (`clientId`, `productId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -168,7 +159,6 @@ CREATE TABLE `ProductOrder` (
     `orderId` INTEGER NOT NULL,
     `amount` INTEGER NOT NULL,
 
-    INDEX `ProductOrder_orderId_fkey`(`orderId`),
     PRIMARY KEY (`productId`, `orderId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

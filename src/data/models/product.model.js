@@ -12,7 +12,8 @@ const includeProductDetails = {
     }
   },
   likes: true,
-  favorites: true
+  favorites: true,
+  discount: true
 }
 
 const includeDiscountedProduct = {
@@ -97,14 +98,28 @@ class ProductModel {
       where: {
         id
       },
-      include: includeProductDetails
+      include: {
+        category: true,
+        comments: true,
+        discount: true,
+        favorites: true,
+        likes: true
+      }
     })
     if (!p)
       return p
     return new ProductDetailsInterface(p)
   }
 
-  static async create({ name, categoryId, price, stock, description, image }) {
+  static async create({ name, categoryId, price, stock, description, image, percentage, gender }) {
+    let discount
+    if (percentage) {
+      discount = {
+        create: {
+          percentage
+        }
+      }
+    }
     const product = await database.product.create({
       data: {
         name,
@@ -115,10 +130,13 @@ class ProductModel {
         image,
         last: {
           create: {}
-        }
+        },
+        discount,
+        gender
       }
     })
-    return new ProductInterface(product)
+    return product
+    // return new ProductInterface(product)
   }
 
   static async update(id, { name, price, stock, available, timesBought, visits, image }) {
@@ -136,7 +154,8 @@ class ProductModel {
         image
       }
     })
-    return new ProductDetailsInterface(product)
+    return product
+    // return new ProductDetailsInterface(product)
   }
 
   static async createComment(clientId, productId, message) {

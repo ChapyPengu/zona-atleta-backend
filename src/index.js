@@ -55,18 +55,39 @@ async function createSalesManager(username, password) {
   })
 }
 
+async function deleteManyProducts() {
+  await database.last.deleteMany()
+  await database.discount.deleteMany()
+  await database.comment.deleteMany()
+  await database.favorite.deleteMany()
+  await database.like.deleteMany()
+  await database.productOrder.deleteMany()
+  await database.clientProduct.deleteMany()
+  return await database.product.deleteMany()
+}
+
+
 async function main() {
   try {
-    console.log(await createProfiles())
-    console.log(await createCategories())
-    console.log(await createSalesManager('lucas77', 'lucas123'))
+    // console.log(await createProfiles())
+    // console.log(await createCategories())
+    // console.log(await createSalesManager('lucas77', 'lucas123'))
+    // console.log(await deleteManyProducts())
+    // console.log(await database.discount.findMany())
   } catch (e) {
     console.log(e)
   }
 }
 
 // main()
-// database.salesManager.findFirst().then(res => console.log(res))
+// database.order.update({
+//   where: {
+//     id: 3
+//   },
+//   data: {
+//     state: 'pago aprobado'
+//   }
+// }).then(res => console.log(res))
 
 const PORT = process.env.PORT ?? 3000
 

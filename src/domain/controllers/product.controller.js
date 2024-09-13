@@ -1,8 +1,8 @@
 const ProductModel = require('../../data/models/product.model')
 const CategoryModel = require('../../data/models/category.model')
+const ClientModel = require('../../data/models/client.model')
 
 const BACKEND_URL = process.env.BACKEND_URL
-// const BACKEND_URL = 'https://zona-atleta-backend-production.up.railway.app'
 
 function formatQuery(query) {
   let offset = parseInt(query.offset)
@@ -78,10 +78,22 @@ class ProductController {
   static async getById(req, res) {
     try {
       const id = parseInt(req.params.id)
+      const { clientId } = req.body
+      console.log(req.body)
       const product = await ProductModel.findById(id)
       if (!product)
         return res.status(404).json({ message: 'Product not found' })
       await ProductModel.update(id, { visits: product.visits + 1 })
+      if (clientId) {
+        const favorites = await ClientModel.findFavorites(clientId)
+        for (const favorite of favorites) {
+          console.log(product.id, favorite.id)
+          if (product.id === favorite.id) {
+            return res.json({...product, isFavorite: true})
+          }
+        }
+        return res.json({...product, isFavorite: false})
+      }
       return res.json(product)
     } catch (e) {
       console.log(e)
@@ -125,7 +137,6 @@ class ProductController {
       const category = await CategoryModel.findById(parseInt(p.categoryId))
       if (!category)
         return res.status(400).json({ message: 'Category not found' })
-
       let image = undefined
       if (req.file) {
         image = "/uploads/" + req.file.filename
@@ -133,11 +144,14 @@ class ProductController {
       const product = await ProductModel.create({
         name: p.name,
         categoryId: parseInt(p.categoryId),
-        description: p.description,
+        description: p.description === '' ? undefined : p.description,
         price: parseInt(p.price),
         stock: parseInt(p.stock),
-        image: image
+        image: image,
+        percentage: p.percentage === '' ? undefined : parseInt(p.percentage),
+        gender: p.gender
       })
+      console.log(product)
       return res.json(product)
     } catch (e) {
       console.log(e)

@@ -12,6 +12,21 @@ const categoryRoutes = require('./routes/category.routes')
 const clientRoutes = require('./routes/client.routes')
 const orderRoutes = require('./routes/order.routes')
 
+// const { auth } = require('express-openid-connect');
+
+// const { requiresAuth } = require('express-openid-connect');
+
+
+// const config = {
+//   authRequired: false,
+//   auth0Logout: true,
+//   secret: 'a long, randomly-generated string stored in env',
+//   baseURL: 'http://localhost:3000',
+//   clientID: '7sJ45RSH5x5guCxunmhRdeNIAbzIvEyS',
+//   // issuerBaseURL: 'http://localhost:3000/'
+//   issuerBaseURL: 'https://dev-jingjlbcz3bpta6j.us.auth0.com'
+// };
+
 const SocketManager = require('../data/clients/socket.manager')
 
 const PROFILES = {
@@ -30,7 +45,11 @@ const io = new SocketServer(server, {
   }
 })
 
-// app.set('port', PORT)
+// auth router attaches /login, /logout, and /callback routes to the baseURL
+
+// req.isAuthenticated is provided from the auth router
+
+// app.use(auth(config));
 
 app.use(cors({
   credentials: true,

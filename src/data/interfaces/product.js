@@ -1,5 +1,4 @@
-const URL = process.env.BACKEND_URL
-const BACKEND_URL = 'https://zona-atleta-backend-production.up.railway.app'
+const BACKEND_URL = process.env.BACKEND_URL
 
 class Product {
 
@@ -8,7 +7,7 @@ class Product {
     this.name = product.name
     this.price = product.price
     this.image = `${BACKEND_URL}${product.image}`
-    this.details = `${URL}/api/product/${product.id}`
+    this.details = `${BACKEND_URL}/api/product/${product.id}`
   }
 }
 

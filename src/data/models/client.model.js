@@ -1,4 +1,9 @@
 const database = require('../database/database')
+const Product = require('../interfaces/product')
+const ProductDetails = require('../interfaces/product.details')
+const Order = require('../interfaces/order')
+
+const { includeProductDetails } = require('./config')
 
 const clientInclude = {
   profile: true
@@ -81,9 +86,18 @@ class ClientModel {
         username,
         email,
         password,
-        profileId: 1
+        chat: {
+          create: {},
+        },
+        profile: {
+          connect: {
+            id: 1
+          }
+        }
       },
-      include: clientInclude
+      include: {
+        profile: true
+      }
     })
     return client
   }
@@ -121,7 +135,7 @@ class ClientModel {
       },
       include: clientProductInclude
     })
-    return products.map(p => ({ ...p.product, amount: p.amount }))
+    return products.map(p => ({ ...(new Product(p.product)), amount: p.amount }))
   }
 
   static async createProduct(id, productId, amount) {
@@ -172,7 +186,7 @@ class ClientModel {
       },
       include: orderInclude
     })
-    return orders
+    return orders.map(o => new Order(o))
   }
 
   static async createOrder(id, paymentMethod, paymentId, address, state, products) {
@@ -265,7 +279,7 @@ class ClientModel {
       },
       include: favoriteInclude
     })
-    return favorite.map(f => ({ ...f.product }))
+    return favorite.map(favorite => new Product(favorite.product))
   }
 
   static async createFavorite(id, productId) {
@@ -274,9 +288,13 @@ class ClientModel {
         clientId: id,
         productId
       },
-      include: favoriteInclude
+      include: {
+        product: {
+          include: includeProductDetails
+        }
+      }
     })
-    return favorite
+    return new ProductDetails(favorite.product)
   }
 
   static async deleteFavorite(id, productId) {
@@ -287,9 +305,13 @@ class ClientModel {
           productId
         }
       },
-      include: favoriteInclude
+      include: {
+        product: {
+          include: includeProductDetails
+        }
+      }
     })
-    return favorite
+    return new ProductDetails(favorite.product)
   }
 
   static async createNotification(id, message) {

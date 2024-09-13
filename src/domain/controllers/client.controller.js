@@ -166,11 +166,9 @@ class ClientController {
       if (productFound.stock - amount < 0)
         return res.status(400).json({ message: 'Insufficient stock' })
       const productFormat = { productId, amount }
-      // Inicia el codigo de Rodri
       const items = []
       items.push({ id: productId, title: productFound.name, description: productFound.description, picture_url: productFound.image, quantity: amount, currency_id: 'ARS', unit_price: productFound.price })
-      const paymentId = "undefined"
-      // Termina el codigo de Rodri
+      const paymentId = "no disponible"
       const state = "pendiente de pago"
       const order = await ClientModel.createOrder(id, paymentMethod, paymentId, address, state, productFormat)
       console.log({
@@ -279,9 +277,7 @@ class ClientController {
         items.push({ id: cp.id, title: cp.name, description: cp.description, picture_url: cp.image, quantity: cp.amount, currency_id: 'ARS', unit_price: cp.price })
       }
       const productsFormat = products.map(p => ({ productId: p.id, amount: p.amount })) // Formatea la lista de productos para que el modelo la entienda
-      // Inicia el codigo de Rodri
-      const paymentId = "undefined"
-      // Termina el codigo de Rodri
+      const paymentId = "no disponible"
       const state = "pendiente de pago"
       const order = await ClientModel.createOrder(id, paymentMethod, paymentId, address, state, productsFormat)
       for (const cp of products) {
@@ -295,7 +291,6 @@ class ClientController {
         )
       }
       const shoppingCart = await ClientModel.deleteManyProduct(id) // Elimina los productos que estaban en el carrito de compras
-
       const preference = await createPreference(items, order.id, res)
       console.log(preference)
       return res.json({ order, ...preference })
@@ -344,19 +339,8 @@ class ClientController {
     try {
       const id = parseInt(req.params.id)
       const productId = parseInt(req.params.productId)
-      const favoriteFound = await ClientModel.findFavorites(id)
-      let found = false
-      for (const fav of favoriteFound) {
-        if (fav.productId === productId) {
-          found = true
-        }
-      }
-      if (found) {
-        return res.json({})
-      } else {
-        const favorite = await ClientModel.createFavorite(id, productId)
-        return res.json(favorite)
-      }
+      const favorite = await ClientModel.createFavorite(id, productId)
+      return res.json({ ...favorite, isFavorite: true })
     } catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server error' })
@@ -368,7 +352,7 @@ class ClientController {
       const id = parseInt(req.params.id)
       const productId = parseInt(req.params.productId)
       const favorite = await ClientModel.deleteFavorite(id, productId)
-      return res.json(favorite)
+      return res.json({ ...favorite, isFavorite: false })
     } catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server error' })
