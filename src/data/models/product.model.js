@@ -30,7 +30,7 @@ class ProductModel {
     return await database.product.count()
   }
 
-  static async findMany(offset, limit) {
+  static async findMany({offset, limit}) {
     const products = await database.product.findMany({
       skip: offset,
       take: limit
@@ -38,7 +38,7 @@ class ProductModel {
     return products.map(p => new ProductInterface(p))
   }
 
-  static async findManyDiscount(offset, limit) {
+  static async findManyDiscount({offset, limit}) {
     const discounts = await database.discount.findMany({
       skip: offset,
       take: limit,
@@ -47,7 +47,7 @@ class ProductModel {
     return discounts.map(d => new DiscountedProduct(d))
   }
 
-  static async findManyPopular(offset, limit) {
+  static async findManyPopular({offset, limit}) {
     const products = await database.product.findMany({
       skip: offset,
       take: limit,
@@ -58,7 +58,7 @@ class ProductModel {
     return products.map(p => new ProductInterface(p))
   }
 
-  static async findManyLast(offset, limit) {
+  static async findManyLast({offset, limit}) {
     const last = await database.last.findMany({
       skip: offset,
       take: limit,
@@ -67,7 +67,7 @@ class ProductModel {
     return last.map(l => new LastProduct(l))
   }
 
-  static async findManyByCategory(name, offset, limit) {
+  static async findManyByCategory({name}, {offset, limit}) {
     const products = await database.product.findFirst({
       skip: offset,
       take: limit,
@@ -80,7 +80,7 @@ class ProductModel {
     return products.map(p => new ProductInterface(p))
   }
 
-  static async findManyByName(name, offset, limit) {
+  static async findManyByName({name}, {offset, limit}) {
     const products = await database.product.findMany({
       skip: offset,
       take: limit,
@@ -158,7 +158,7 @@ class ProductModel {
     // return new ProductDetailsInterface(product)
   }
 
-  static async createComment(clientId, productId, message) {
+  static async createComment({clientId, productId, message}) {
     const comment = await database.comment.create({
       data: {
         clientId,
@@ -169,7 +169,7 @@ class ProductModel {
     return comment
   }
 
-  static async createResponse(commentId, message) {
+  static async createResponse({commentId, message}) {
     const response = await database.response.create({
       data: {
         commentId,
@@ -179,7 +179,7 @@ class ProductModel {
     return response
   }
 
-  static async updateResponse(responseId, message) {
+  static async updateResponse(responseId, {message}) {
     const response = await database.response.update({
       where: {
         id: responseId

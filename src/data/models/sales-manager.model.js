@@ -2,7 +2,7 @@ const database = require('../database/database')
 
 class SalesManagerModel {
 
-  static async create(username, password) {
+  static async create({username, password}) {
     const salesManager = await database.salesManager.create({
       data: {
         username,
@@ -16,7 +16,7 @@ class SalesManagerModel {
     return salesManager
   }
 
-  static async findByUsername(username) {
+  static async findByUsername({username}) {
     const fonud = await database.salesManager.findFirst({
       where: {
         username
@@ -53,7 +53,7 @@ class SalesManagerModel {
     return salesManager
   }
 
-  static async findByUsernameAndPassword(username, password) {
+  static async findByUsernameAndPassword({username, password}) {
     const salesManager = await database.salesManager.findFirst({
       where: {
         AND: [

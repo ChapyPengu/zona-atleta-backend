@@ -32,7 +32,7 @@ class OrderModel {
     }
   }
 
-  static async update(id, state, address) {
+  static async update(id, {state, address}) {
     const order = await database.order.update({
       where: {
         id
@@ -53,7 +53,7 @@ class OrderModel {
   }
 
 
-  static async updateIDPayment(id, paymentId) {
+  static async updateIDPayment(id, {paymentId}) {
     const order = await database.order.update({
       where: {
         id

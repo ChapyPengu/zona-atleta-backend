@@ -126,6 +126,16 @@ model Order {
     products      ProductOrder[]
 }
 
+model OrderMessage{
+    idOrderMessage            Int            @id @default(autoincrement())
+    emisorId Int
+    receptorId Int
+    orderId Int
+    message String
+    date          DateTime       @default(now())
+    tipo int
+}
+
 model ClientProduct {
     clientId  Int
     productId Int

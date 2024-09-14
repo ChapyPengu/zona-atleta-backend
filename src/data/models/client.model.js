@@ -48,7 +48,7 @@ class ClientModel {
     return client
   }
 
-  static async findByUsername(username) {
+  static async findByUsername({username}) {
     const client = await database.client.findFirst({
       where: {
         username
@@ -59,7 +59,7 @@ class ClientModel {
     return client
   }
 
-  static async findByUsernameOrEmail(username, email) {
+  static async findByUsernameOrEmail({username, email}) {
     const client = await database.client.findFirst({
       where: {
         OR: [
@@ -80,7 +80,7 @@ class ClientModel {
     return client
   }
 
-  static async create(username, email, password) {
+  static async create({username, email, password}) {
     const client = await database.client.create({
       data: {
         username,
@@ -112,7 +112,7 @@ class ClientModel {
     return client
   }
 
-  static async update(id, username, email, password, image) {
+  static async update(id, {username, email, password, image}) {
     const client = await database.client.update({
       where: {
         id
@@ -138,7 +138,7 @@ class ClientModel {
     return products.map(p => ({ ...(new Product(p.product)), amount: p.amount }))
   }
 
-  static async createProduct(id, productId, amount) {
+  static async createProduct(id, {productId, amount}) {
     const product = await database.clientProduct.create({
       data: {
         clientId: id,
@@ -150,7 +150,7 @@ class ClientModel {
     return product
   }
 
-  static async deleteProduct(id, productId) {
+  static async deleteProduct(id, {productId}) {
     const product = await database.clientProduct.delete({
       where: {
         productId_clientId: {
@@ -163,7 +163,7 @@ class ClientModel {
     return product
   }
 
-  static async updateProduct(id, productId, amount) {
+  static async updateProduct(id, {productId, amount}) {
     const product = await database.clientProduct.update({
       where: {
         productId_clientId: {
@@ -189,7 +189,7 @@ class ClientModel {
     return orders.map(o => new Order(o))
   }
 
-  static async createOrder(id, paymentMethod, paymentId, address, state, products) {
+  static async createOrder(id, {paymentMethod, paymentId, address, state, products}) {
     const order = await database.order.create({
       data: {
         paymentMethod,
@@ -206,7 +206,7 @@ class ClientModel {
     return order
   }
 
-  static async deleteProduct(id, productId) {
+  static async deleteProduct(id, {productId}) {
     console.log(id, productId)
     const product = await database.clientProduct.delete({
       where: {
@@ -231,7 +231,7 @@ class ClientModel {
     return products
   }
 
-  static async updateProduct(id, productId, amount) {
+  static async updateProduct(id, {productId, amount}) {
     console.log(id, productId, amount)
     const product = await database.clientProduct.update({
       where: {
@@ -250,7 +250,7 @@ class ClientModel {
     return product
   }
 
-  static async createLike(id, productId) {
+  static async createLike(id, {productId}) {
     const like = await database.like.create({
       data: {
         clientId: id,
@@ -260,7 +260,7 @@ class ClientModel {
     return like
   }
 
-  static async deleteLike(id, productId) {
+  static async deleteLike(id, {productId}) {
     const like = await database.like.delete({
       where: {
         clientId_productId: {
@@ -282,7 +282,7 @@ class ClientModel {
     return favorite.map(favorite => new Product(favorite.product))
   }
 
-  static async createFavorite(id, productId) {
+  static async createFavorite(id, {productId}) {
     const favorite = await database.favorite.create({
       data: {
         clientId: id,
@@ -297,7 +297,7 @@ class ClientModel {
     return new ProductDetails(favorite.product)
   }
 
-  static async deleteFavorite(id, productId) {
+  static async deleteFavorite(id, {productId}) {
     const favorite = await database.favorite.delete({
       where: {
         clientId_productId: {
@@ -314,7 +314,7 @@ class ClientModel {
     return new ProductDetails(favorite.product)
   }
 
-  static async createNotification(id, message) {
+  static async createNotification(id, {message}) {
     const notification = await database.notification.create({
       data: {
         clientId: id,

@@ -184,9 +184,10 @@ class ProductController {
 
   static async postComment(req, res) {
     try {
-      const id = parseInt(req.params.id)
-      const { message } = req.body
-      const comment = await ProductModel.createComment(id, message)
+      const productId = parseInt(req.params.id)
+      const message = req.body.message
+      const clientId = req.body.clientId
+      const comment = await ProductModel.createComment(clientId, productId, message)
       console.log(comment)
       return res.json(comment)
     } catch (e) {

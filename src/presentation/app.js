@@ -11,6 +11,7 @@ const productRoutes = require('./routes/product.routes')
 const categoryRoutes = require('./routes/category.routes')
 const clientRoutes = require('./routes/client.routes')
 const orderRoutes = require('./routes/order.routes')
+const orderMessageRoutes = require('./routes/order.message.routes')
 
 // const { auth } = require('express-openid-connect');
 
@@ -72,7 +73,7 @@ app.use('/api/client', clientRoutes)
 app.use('/api/product', productRoutes)
 app.use('/api/category', categoryRoutes)
 app.use('/api/order', orderRoutes)
-
+app.use('/api/order-message', orderMessageRoutes)
 app.use(express.static(path.join(__dirname, '../../public')))
 
 io.on('connection', socket => {

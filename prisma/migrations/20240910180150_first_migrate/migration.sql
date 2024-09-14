@@ -129,6 +129,19 @@ CREATE TABLE `Order` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `OrderMessage` (
+    `idOrderMessage` INTEGER NOT NULL AUTO_INCREMENT,
+    `emisorId` INTEGER NOT NULL,
+    `receptorId` INTEGER NOT NULL,
+    `orderId` INTEGER NOT NULL,
+    `message` VARCHAR(250) NOT NULL,
+    `date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `tipo` INTEGER NOT NULL,
+
+    PRIMARY KEY (`idOrderMessage`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `ClientProduct` (
     `clientId` INTEGER NOT NULL,
     `productId` INTEGER NOT NULL,
@@ -194,6 +207,9 @@ ALTER TABLE `Response` ADD CONSTRAINT `Response_commentId_fkey` FOREIGN KEY (`co
 
 -- AddForeignKey
 ALTER TABLE `Order` ADD CONSTRAINT `Order_clientId_fkey` FOREIGN KEY (`clientId`) REFERENCES `Client`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `OrderMessage` ADD CONSTRAINT `OrderMessage_orderId_fkey` FOREIGN KEY (`orderId`) REFERENCES `Order`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `ClientProduct` ADD CONSTRAINT `ClientProduct_clientId_fkey` FOREIGN KEY (`clientId`) REFERENCES `Client`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -16,7 +16,7 @@ class CategoryModel {
     return category
   }
 
-  static async create(name) {
+  static async create({name}) {
     const category = await database.category.create({
       data: {
         name
