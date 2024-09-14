@@ -124,16 +124,18 @@ model Order {
     clientId      Int
     client        Client         @relation(fields: [clientId], references: [id])
     products      ProductOrder[]
+    orderMessages OrderMessage[]
 }
 
 model OrderMessage{
-    idOrderMessage            Int            @id @default(autoincrement())
-    emisorId Int
-    receptorId Int
-    orderId Int
-    message String
-    date          DateTime       @default(now())
-    tipo int
+    idOrderMessage      Int         @id @default(autoincrement())
+    emisorId            Int
+    receptorId          Int
+    orderId             Int 
+    order               Order       @relation(fields: [orderId], references: [id])
+    message             String
+    date                DateTime    @default(now())
+    vendedor            Boolean     
 }
 
 model ClientProduct {
