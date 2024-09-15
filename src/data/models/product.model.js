@@ -169,18 +169,6 @@ class ProductModel {
     return comment
   }
 
-  static async putViewComment(id,{view}){
-    const comment = await database.comment.update({
-      where:{
-        id
-      },
-      data:{
-        view
-      }
-    })
-    return comment
-  }
-
   static async createResponse({commentId, message}) {
     const response = await database.response.create({
       data: {
@@ -231,6 +219,18 @@ class ProductModel {
       }
     })
     return response
+  }  
+  
+  static async putViewComment(id,{view}){
+    const comment = await database.comment.update({
+      where:{
+        id
+      },
+      data:{
+        view
+      }
+    })
+    return comment
   }
 }
 
