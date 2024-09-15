@@ -38,7 +38,8 @@ class OrderMessageController {
     static async putView(req,res){
         try{
             const id = parseInt(req.params.orderId)
-            const orderMessages = await OrderMessageModel.putViewOrderMessage(id, true)
+            const view = JSON.stringify({view:true})
+            const orderMessages = await OrderMessageModel.putViewOrderMessage(id, {view})
             return res.json(orderMessages)
         }catch(e){
             console.log(e)

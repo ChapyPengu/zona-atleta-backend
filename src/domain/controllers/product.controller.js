@@ -198,7 +198,8 @@ class ProductController {
   static async viewComment(req,res){
     try{
       const id = parseInt(req.params.id)
-      const comment = await ProductModel.putViewComment(id, true)
+      const view = JSON.stringify({view:true})
+      const comment = await ProductModel.putViewComment(id, {view})
       return res.json(comment)
     }catch (e) {
       console.log(e)
@@ -233,7 +234,8 @@ class ProductController {
   static async viewResponse(req,res){
     try{
       const id = parseInt(req.params.id)
-      const response = await ProductModel.putViewResponse(id, true)
+      const view = JSON.stringify({view:true})
+      const response = await ProductModel.putViewResponse(id, {view})
       return res.json(response)
     }catch (e) {
       console.log(e)
