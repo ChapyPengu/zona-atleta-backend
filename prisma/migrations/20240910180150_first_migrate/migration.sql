@@ -136,7 +136,7 @@ CREATE TABLE `OrderMessage` (
     `orderId` INTEGER NOT NULL,
     `message` VARCHAR(250) NOT NULL,
     `date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `tipo` INTEGER NOT NULL,
+    `vendedor` BOOLEAN NOT NULL,
 
     PRIMARY KEY (`idOrderMessage`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
