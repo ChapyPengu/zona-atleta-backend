@@ -4,9 +4,7 @@ POST http://localhost:3000/api/order-message/1 HTTP/1.1
 content-type: application/json
 
 {
-    "emisorId":"2",
-    "receptorId":"1",
     "orderId":"1",
     "message":"Hola,como estas?",
-    "tipo":"0"
+    "vendedor":"true"
 }
