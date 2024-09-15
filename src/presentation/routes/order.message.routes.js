@@ -4,5 +4,5 @@ const router = Router()
 router.get('/', OrderMessageController.getAll)
 router.post('/', OrderMessageController.post)
 router.get('/:id', OrderMessageController.getNotView)
-router.put('/', OrderMessageController.put)
+router.put('/', OrderMessageController.putView)
 module.exports = router

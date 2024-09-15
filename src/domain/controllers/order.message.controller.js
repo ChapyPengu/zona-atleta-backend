@@ -34,10 +34,10 @@ class OrderMessageController {
         }
     }
 
-    static async put(req,res){
+    static async putView(req,res){
         try{
             const id = parseInt(req.params.orderId)
-            const orderMessages = await OrderMessageModel.create(id, true)
+            const orderMessages = await OrderMessageModel.putViewOrderMessage(id, true)
             return res.json(orderMessages)
         }catch(e){
             console.log(e)

@@ -199,7 +199,6 @@ class ProductController {
     try{
       const id = parseInt(req.params.id)
       const comment = await ProductModel.putViewComment(id, true)
-      console.log(comment)
       return res.json(comment)
     }catch (e) {
       console.log(e)
@@ -226,6 +225,39 @@ class ProductController {
       const product = await ProductModel.updateResponse(responseId, message)
       return res.json(product)
     } catch (e) {
+      console.log(e)
+      return res.status(500).json({ message: 'Server Error' })
+    }
+  }
+  
+  static async viewResponse(req,res){
+    try{
+      const id = parseInt(req.params.id)
+      const response = await ProductModel.putViewResponse(id, true)
+      return res.json(response)
+    }catch (e) {
+      console.log(e)
+      return res.status(500).json({ message: 'Server Error' })
+    }
+  }
+
+  static async notViewResponse(req,res){
+    try{
+      const id = parseInt(req.params.id)
+      const response = await ProductModel.getNotViewResponse(id)
+      return res.json(response)
+    }catch (e) {
+      console.log(e)
+      return res.status(500).json({ message: 'Server Error' })
+    }
+  }
+
+  static async notViewComment(req,res){
+    try{
+      const id = parseInt(req.params.id)
+      const comment = await ProductModel.getNotViewComment(id)
+      return res.json(comment)
+    }catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server Error' })
     }

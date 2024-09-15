@@ -203,6 +203,35 @@ class ProductModel {
     return response
   }
   
+  static async putViewResponse(id, {view}){
+    const response = await database.response.update({
+      where:{
+        id
+      },
+      data:{
+        view
+      }
+    })
+    return response
+  }
+  static async getNotViewComment (id){
+    const comment = await database.comment.findMany({
+      where:{
+        id,
+        view: false
+      }
+    })
+    return comment
+  }
+  static async getNotViewResponse (id){
+    const response = await database.response.findMany({
+      where:{
+        id,
+        view: false
+      }
+    })
+    return response
+  }
 }
 
 module.exports = ProductModel

@@ -32,7 +32,7 @@ class OrderMessageModel{
         return orderMessages
     }
 
-    static async putView(id, {view}){
+    static async putViewOrderMessage(id, {view}){
         const orderMessages = await database.orderMessage.update({
             where:{
                 orderId: id

@@ -18,5 +18,8 @@ router.put('/response/:id', ProductController.putResponse)
 router.get('/category/:name', ProductController.getByCategory)
 router.get('/name/:name', ProductController.getByName)
 router.put('/comment', ProductController.viewComment)
+router.put('/:id/response', ProductController.viewResponse)
+router.get('/comment/:id', ProductController.notViewComment)
+router.get('/response', ProductController.viewResponse)
 
 module.exports = router
