@@ -185,12 +185,23 @@ class ProductController {
   static async postComment(req, res) {
     try {
       const productId = parseInt(req.params.id)
-      const message = req.body.message
-      const clientId = req.body.clientId
-      const comment = await ProductModel.createComment(clientId, productId, message)
+      const {message, clientId} = req.body
+      const comment = await ProductModel.createComment(productId, {clientId, message})
       console.log(comment)
       return res.json(comment)
     } catch (e) {
+      console.log(e)
+      return res.status(500).json({ message: 'Server Error' })
+    }
+  }
+
+  static async viewComment(req,res){
+    try{
+      const id = parseInt(req.params.id)
+      const comment = await ProductModel.putViewComment(id, true)
+      console.log(comment)
+      return res.json(comment)
+    }catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server Error' })
     }

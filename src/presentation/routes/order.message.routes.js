@@ -3,4 +3,6 @@ const OrderMessageController = require('../../domain/controllers/order.message.c
 const router = Router()
 router.get('/', OrderMessageController.getAll)
 router.post('/', OrderMessageController.post)
+router.get('/:id', OrderMessageController.getNotView)
+router.put('/', OrderMessageController.put)
 module.exports = router

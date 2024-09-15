@@ -9,13 +9,37 @@ class OrderMessageModel{
         })
         return orderMessages.map(o => new OrderMessage(o))
     }
-    static async create({ message, orderId, vendedor}) {
+    
+    static async create({orderId, message, vendedor}) {
         const orderMessages = await database.orderMessage.create({
           data: {
             orderId,
             message,
             vendedor //Si es false el mensaje lo envia el comprador, si es true lo envia el vendedor
           }
+        })
+        return orderMessages
+    }
+
+    static async cantNotifys(id, {tipo}){
+        const orderMessages = await database.orderMessage.findMany({
+            where: {
+                orderId: id,
+                vendedor: tipo,
+                view: false
+            }
+        })
+        return orderMessages
+    }
+
+    static async putView(id, {view}){
+        const orderMessages = await database.orderMessage.update({
+            where:{
+                orderId: id
+            },
+            data:{
+                view
+            }
         })
         return orderMessages
     }

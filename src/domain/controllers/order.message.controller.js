@@ -1,4 +1,4 @@
-const OrderMessageModel = require('../../data/models/order.model')
+const OrderMessageModel = require('../../data/models/order.message.model')
 class OrderMessageController {
     static async getAll(req, res) {
         try {
@@ -9,16 +9,40 @@ class OrderMessageController {
           return res.status(500).json({ message: 'Server Error' })
         }
     }
+
+    static async getNotView(req,res){
+        try{
+            const id = parseInt(req.params.id)
+            const tipo = req.body.vendedor
+            const orderMessages = await OrderMessageModel.cantNotifys(id, {tipo})
+            return res.json(orderMessages)
+        }catch(e){
+            console.log(e)
+            return res.status(500).json({message: 'Server Error'})
+        }
+    }
+    
     static async post(req, res) {
-        const orderMessages = await OrderMessageModel.create({
-            data: {
-                orderId:req.body.orderId,
-                message:req.body.message,
-                vendedor:req.body.vendedor //Si es true el mensaje lo envia vendedor,  si es false lo envia comprador
-            }
-        })
-        console.log(orderMessages)
-        return res.json(orderMessages)
+        try{
+            const id = parseInt(req.params.orderId)
+            const {message, vendedor} = req.body
+            const orderMessages = await OrderMessageModel.create(id, {message,vendedor})
+            return res.json(orderMessages)
+        }catch(e){
+            console.log(e)
+            return res.status(500).json({message: 'Server Error'})
+        }
+    }
+
+    static async put(req,res){
+        try{
+            const id = parseInt(req.params.orderId)
+            const orderMessages = await OrderMessageModel.create(id, true)
+            return res.json(orderMessages)
+        }catch(e){
+            console.log(e)
+            return res.status(500).json({message: 'Server Error'})
+        }
     }
 }
 module.exports = OrderMessageController
