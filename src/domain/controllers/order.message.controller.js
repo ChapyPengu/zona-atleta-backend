@@ -2,7 +2,8 @@ const OrderMessageModel = require('../../data/models/order.message.model')
 class OrderMessageController {
     static async getAll(req, res) {
         try {
-          const orderMessages = await OrderMessageModel.findById(req.body.orderId)
+          const id = parseInt(req.params.id)
+          const orderMessages = await OrderMessageModel.findById(id)
           return res.json(orderMessages)
         } catch (e) {
           console.log(e)
