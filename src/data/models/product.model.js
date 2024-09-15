@@ -208,7 +208,7 @@ class ProductModel {
   }
 
   //GETNOTVIEWCOMMENT()
-  //Devuelve todos los comentarios del cliente que no fueron vistos por los vendedores
+  //Devuelve todos los comentarios de los clientes que no fueron vistos por los vendedores
   static async getNotViewComment (){
     const comment = await database.comment.findMany({
       where:{
