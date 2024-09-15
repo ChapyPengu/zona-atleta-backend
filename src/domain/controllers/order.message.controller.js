@@ -1,6 +1,6 @@
 const OrderMessageModel = require('../../data/models/order.message.model')
 class OrderMessageController {
-
+    //GETALL()
     //Usar cuando queremos obtener todos los mensajes de una orden
     //Mandarle por parametros el id de la orden
     static async getAll(req, res) {
@@ -14,6 +14,7 @@ class OrderMessageController {
         }
     }
 
+    //GETNOTVIEWCLIENTS()
     //Usar cuando queremos obtener todos los mensajes que no vio el cliente de las ordenes 
     //Pasarle por parametros el id del cliente
     static async getNotViewClients(req,res){
@@ -27,6 +28,7 @@ class OrderMessageController {
         }
     }
 
+    //GETNOTVIEWSALES()
     //Usar cuando queremos obtener todos los mensajes de las ordenes que no fueron vistos por ventas 
     static async getNotViewSales(req,res){
         try{
@@ -37,7 +39,8 @@ class OrderMessageController {
             return res.status(500).json({message: 'Server Error'})
         }
     }
-    
+
+    //POST()
     //Usar cuando el vendedor o el comprador envian un nuevo mensaje en la orden
     //Pasarle por parametros el id de la orden
     //Pasarle por body message, vendedor
@@ -55,6 +58,7 @@ class OrderMessageController {
         }
     }
 
+    //PUTVIEW()
     //Usarlo cuando queremos marcar mensajes como visto por el vendedor o comprador 
 
     //Si al req.body.tipo le damos valor false quiere decir que los mensajes están siendo vistos por equipo de ventas
