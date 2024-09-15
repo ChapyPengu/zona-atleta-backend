@@ -16,7 +16,7 @@ class OrderMessageController {
                 receptorId:req.body.receptorId,
                 orderId:req.body.orderId,
                 message:req.body.message,
-                tipo:req.body.tipo//Siendo tipo 0 si es mensaje del cliente y 1 si es mensaje del vendedor
+                vendedor:req.body.vendedor //Si es true el mensaje lo envia vendedor,  si es false lo envia comprador
             }
         })
         console.log(orderMessages)

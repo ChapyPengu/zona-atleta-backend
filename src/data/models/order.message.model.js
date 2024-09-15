@@ -9,14 +9,14 @@ class OrderMessageModel{
         })
         return orderMessages.map(o => new OrderMessage(o))
     }
-    static async create({ message, emisorId, receptorId, orderId, tipo}) {
+    static async create({ message, emisorId, receptorId, orderId, vendedor}) {
         const orderMessages = await database.orderMessage.create({
           data: {
             emisorId,
             receptorId,
             orderId,
             message,
-            tipo//Siendo tipo 0 si es mensaje del cliente y 1 si es mensaje del vendedor
+            vendedor //Si es false el mensaje lo envia el comprador, si es true lo envia el vendedor
           }
         })
         return orderMessages

@@ -4,7 +4,7 @@ class OrderMessage {
         this.receptorId = orderMessage.receptorId
         this.idOrder = orderMessage.idOrder
         this.message = orderMessage.message
-        this.tipo = orderMessage.tipo//Si tipo es 0 = "Mensaje de cliente" si tipo es 1 = "Mensaje de Vendedor"
+        this.vendedor = orderMessage.vendedor//Si es false el mensaje lo envia el comprador, si es true lo envia el vendedor
     }
 }
     
