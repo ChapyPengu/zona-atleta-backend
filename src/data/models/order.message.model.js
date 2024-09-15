@@ -1,7 +1,7 @@
 const database = require('../database/database')
 const OrderMessage = require('../interfaces/order.message')
 class OrderMessageModel{
-    static async findManyById(id) {
+    static async findById(id) {
         const orderMessages = await database.orderMessage.findMany({
             where: {
                 orderId: id
