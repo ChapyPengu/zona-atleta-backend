@@ -100,6 +100,7 @@ CREATE TABLE `Comment` (
     `date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `clientId` INTEGER NOT NULL,
     `productId` INTEGER NOT NULL,
+    `view` BOOLEAN NOT NULL DEFAULT false,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -110,6 +111,7 @@ CREATE TABLE `Response` (
     `message` VARCHAR(191) NOT NULL,
     `date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `commentId` INTEGER NOT NULL,
+    `view` BOOLEAN NOT NULL DEFAULT false,
 
     UNIQUE INDEX `Response_commentId_key`(`commentId`),
     PRIMARY KEY (`id`)
@@ -135,6 +137,7 @@ CREATE TABLE `OrderMessage` (
     `message` VARCHAR(250) NOT NULL,
     `date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `vendedor` BOOLEAN NOT NULL,
+    `view` BOOLEAN NOT NULL DEFAULT false,
 
     PRIMARY KEY (`idOrderMessage`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
