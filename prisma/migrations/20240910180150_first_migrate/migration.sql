@@ -131,8 +131,6 @@ CREATE TABLE `Order` (
 -- CreateTable
 CREATE TABLE `OrderMessage` (
     `idOrderMessage` INTEGER NOT NULL AUTO_INCREMENT,
-    `emisorId` INTEGER NOT NULL,
-    `receptorId` INTEGER NOT NULL,
     `orderId` INTEGER NOT NULL,
     `message` VARCHAR(250) NOT NULL,
     `date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),

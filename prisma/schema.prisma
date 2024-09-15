@@ -129,8 +129,6 @@ model Order {
 
 model OrderMessage{
     idOrderMessage      Int         @id @default(autoincrement())
-    emisorId            Int
-    receptorId          Int
     orderId             Int 
     order               Order       @relation(fields: [orderId], references: [id])
     message             String

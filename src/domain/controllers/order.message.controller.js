@@ -12,8 +12,6 @@ class OrderMessageController {
     static async post(req, res) {
         const orderMessages = await OrderMessageModel.create({
             data: {
-                emisorId:req.body.emisorId,
-                receptorId:req.body.receptorId,
                 orderId:req.body.orderId,
                 message:req.body.message,
                 vendedor:req.body.vendedor //Si es true el mensaje lo envia vendedor,  si es false lo envia comprador
