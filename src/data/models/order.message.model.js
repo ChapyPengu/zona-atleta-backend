@@ -1,6 +1,8 @@
 const database = require('../database/database')
 const OrderMessage = require('../interfaces/order.message')
 class OrderMessageModel{
+
+    //Devuelve del id de la orden todos los mensajes
     static async findById(id) {
         const orderMessages = await database.orderMessage.findMany({
             where: {
@@ -10,7 +12,9 @@ class OrderMessageModel{
         return orderMessages.map(o => new OrderMessage(o))
     }
     
-    static async create({orderId, message, vendedor}) {
+    //Recibe el id de la orden, un mensaje, y vendedor(true si manda el msj el vendedor||false si manda el msj el comprador)
+    // crea un nuevo mensaje
+    static async create(orderId, {message, vendedor}) {
         const orderMessages = await database.orderMessage.create({
           data: {
             orderId,
@@ -21,24 +25,45 @@ class OrderMessageModel{
         return orderMessages
     }
 
-    static async cantNotifys(id, {tipo}){
+    //Aca mediante las ordenes que tengan el id del cliente 
+    //Podemos obtener
+    //mensajes enviados por los vendedores no vistos por el cliente sobre las ordenes del mismo
+    static async cantNotifysClient(id){
         const orderMessages = await database.orderMessage.findMany({
-            where: {
-                orderId: id,
-                vendedor: tipo,
-                view: false
+            where:{
+                order:{
+                    clientId:id
+                },
+                vendedor: true,
+                view:false
             }
         })
         return orderMessages
     }
 
-    static async putViewOrderMessage(id, {view}){
+    //Aca al consultar recibimos todos los mensajes de las ordenes que no fueron vistos por los vendedores
+    static async cantNotifysSold(){
+        const orderMessages = await database.orderMessage.findMany({
+            where:{
+                vendedor: false,
+                view:false
+            }
+        })
+        return orderMessages
+    }
+    
+    //Aca mediante el id de la orden y mediante un "tipo" el cual es verdadero o falso
+    //Podemos marcar como visto los mensajes 
+    //tipo: debe ser true si los mensajes están siendo vistos por el comprador
+    //tipo: debe ser false si los mensajes están siendo vistos por el vendedor
+    static async putViewOrderMessage(id, {tipo}){
         const orderMessages = await database.orderMessage.update({
             where:{
-                orderId: id
+                orderId: id,
+                vendedor: tipo
             },
             data:{
-                view
+                view: true
             }
         })
         return orderMessages

@@ -17,9 +17,9 @@ router.post('/response', ProductController.postResponse)
 router.put('/response/:id', ProductController.putResponse)
 router.get('/category/:name', ProductController.getByCategory)
 router.get('/name/:name', ProductController.getByName)
-router.put('/comment', ProductController.viewComment)
-router.put('/:id/response', ProductController.viewResponse)
-router.get('/comment/:id', ProductController.notViewComment)
-router.get('/response', ProductController.viewResponse)
+router.put('/:id/comment', ProductController.viewComment)//Para marcar un comentario como visto por los admin, utilizarlo cuando el comentario es respondido, haciendo que se reste el comentario de las notificaciones 
+router.put('/:id/response', ProductController.viewResponse)//Para marcar cuando el cliente ve la respuesta a su comentario, utilizarlo cuando el cliente elimina la notificacion, o cuando apreta sobre la notificacion y es redirigido al producto que tuvo el comentario
+router.get('/comment', ProductController.notViewComment)//Para cuando se loguea el admin, nos fijamos que comentarios no vio para mostrarlos en notificaciones y para calcular cuantas notificaciones tienen los vendedores
+router.get('/:id/response', ProductController.notViewResponse)//Para cuando se loguea el cliente, nos fijamos que respuestas no vio para mostrarlas en notificaciones y para caclular cuantas notificaciones tiene el cliente
 
 module.exports = router

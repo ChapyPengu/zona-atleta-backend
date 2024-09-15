@@ -1,8 +1,9 @@
 const { Router } = require('express')
 const OrderMessageController = require('../../domain/controllers/order.message.controller')
 const router = Router()
-router.get('/', OrderMessageController.getAll)
-router.post('/', OrderMessageController.post)
-router.get('/:id', OrderMessageController.getNotView)
-router.put('/', OrderMessageController.putView)
+router.get('/:id', OrderMessageController.getAll)
+router.post('/:id', OrderMessageController.post)
+router.get('/:id/order-message', OrderMessageController.getNotViewClients)
+router.put('/:id', OrderMessageController.putView)
+router.get('/', OrderMessageController.getNotViewSales)
 module.exports = router

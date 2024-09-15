@@ -191,43 +191,58 @@ class ProductModel {
     return response
   }
   
-  static async putViewResponse(id, {view}){
+
+  //PUTVIEWRESPONSE()
+  //Recibe el id de la respuesta 
+  //Devuelve la respuesta marcada como vista ✔✔ por el cliente
+  static async putViewResponse(id){
     const response = await database.response.update({
       where:{
         id
       },
       data:{
-        view
+        view:true
       }
     })
     return response
   }
-  static async getNotViewComment (id){
+
+  //GETNOTVIEWCOMMENT()
+  //Devuelve todos los comentarios del cliente que no fueron vistos por los vendedores
+  static async getNotViewComment (){
     const comment = await database.comment.findMany({
       where:{
-        id,
         view: false
       }
     })
     return comment
   }
+
+  //GETNOTVIEWRESPONSE()
+  //Recibe id que es igual al id del cliente
+  //Devuelve todas las respuestas de los comentarios del cliente que no fueron vistas por el mismo
   static async getNotViewResponse (id){
     const response = await database.response.findMany({
       where:{
-        id,
+        comment:{
+          clientId:id
+        },
         view: false
       }
     })
     return response
   }  
-  
-  static async putViewComment(id,{view}){
+
+  //PUTVIEWCOMMENT()
+  //Recibe el id del comentario
+  //Devuelve el comentario marcado como visto por el vendedor 
+  static async putViewComment(id){
     const comment = await database.comment.update({
       where:{
         id
       },
       data:{
-        view
+        view:true
       }
     })
     return comment
