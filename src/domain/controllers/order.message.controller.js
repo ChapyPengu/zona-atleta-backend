@@ -71,7 +71,7 @@ class OrderMessageController {
     static async putView(req,res){
         try{
             const id = parseInt(req.params.orderId)
-            const tipo = req.body.tipo //si vendedor es false, el mensaje es de tipo comprador si es true tipo vendedor
+            const tipo = req.body.tipo //si req.body.tipo es false el mensaje es de tipo comprador, si es true tipo vendedor
             const orderMessages = await OrderMessageModel.putViewOrderMessage(id, {tipo})
             return res.json(orderMessages)
         }catch(e){
