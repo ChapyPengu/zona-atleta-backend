@@ -1,3 +1,5 @@
+const dotenv = require('dotenv')
+dotenv.config()
 const app = require('./presentation/app')
 const database = require('./data/database/database')
 const bcrypt = require('bcryptjs')
