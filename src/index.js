@@ -78,9 +78,9 @@ async function deleteClient(id) {
 
 async function main() {
   try {
-    // console.log(await createProfiles())
-    // console.log(await createCategories())
-    // console.log(await createSalesManager('lucas77', 'lucas123'))
+    console.log(await createProfiles())
+    console.log(await createCategories())
+    console.log(await createSalesManager('lucas77', 'lucas123'))
     // console.log(await deleteManyProducts())
     // console.log(await database.discount.findMany())
     // console.log(await deleteClient(1))
@@ -99,11 +99,11 @@ async function main() {
 //     state: 'pago aprobado'
 //   }
 // }).then(res => console.log(res))
-database.salesManager.findMany().then(res => {
-  console.log(res)
-})
-const PORT = process.env.PORT ?? 3000
+// database.salesManager.findMany().then(res => {
+//   console.log(res)
+// })
+const PORT = process.env.PORT || 3000
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log('Server on port', PORT)
 })

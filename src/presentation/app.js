@@ -16,7 +16,6 @@ const orderMessageRoutes = require('./routes/order.message.routes')
 
 const SocketManager = require('../data/clients/socket.manager')
 
-const PORT = process.env.PORT ?? 3000
 const CLIENT = process.env.CLIENT
 const PROFILES = {
   CLIENT: 1,
@@ -62,10 +61,7 @@ app.use(express.static(path.join(__dirname, '../../public')))
 
 // Eventos via sockets
 io.on('connection', socket => {
-  console.log('Client connect')
-  if (socket) {
-    
-  }
+
 })
 
 module.exports = server
