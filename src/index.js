@@ -1,5 +1,6 @@
 const app = require('./presentation/app')
 const database = require('./data/database/database')
+const bcrypt = require('bcryptjs')
 
 async function createProfiles() {
   return await database.profile.createMany({
@@ -46,10 +47,11 @@ async function createCategories() {
 }
 
 async function createSalesManager(username, password) {
+  const hash = await bcrypt.hash(password, 10)
   return await database.salesManager.create({
     data: {
       username,
-      password,
+      password: hash,
       profileId: 2
     }
   })
@@ -66,6 +68,13 @@ async function deleteManyProducts() {
   return await database.product.deleteMany()
 }
 
+async function deleteClient(id) {
+  return await database.client.delete({
+    where: {
+      id
+    }
+  })
+}
 
 async function main() {
   try {
@@ -74,12 +83,14 @@ async function main() {
     // console.log(await createSalesManager('lucas77', 'lucas123'))
     // console.log(await deleteManyProducts())
     // console.log(await database.discount.findMany())
+    // console.log(await deleteClient(1))
   } catch (e) {
     console.log(e)
   }
 }
 
 // main()
+
 // database.order.update({
 //   where: {
 //     id: 3
@@ -88,7 +99,9 @@ async function main() {
 //     state: 'pago aprobado'
 //   }
 // }).then(res => console.log(res))
-
+database.salesManager.findMany().then(res => {
+  console.log(res)
+})
 const PORT = process.env.PORT ?? 3000
 
 app.listen(PORT, () => {

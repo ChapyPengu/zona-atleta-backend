@@ -6,6 +6,7 @@ class CommentInterface {
     this.date = comment.date
     this.client = comment.client
     this.response = comment.response
+    this.view = comment.view
   }
 }
 

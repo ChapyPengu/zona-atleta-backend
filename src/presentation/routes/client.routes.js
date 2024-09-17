@@ -21,5 +21,6 @@ router.post('/:id/favorite/:productId', ClientController.postFavorite)
 router.delete('/:id/favorite/:productId', ClientController.deleteFavorite)
 router.get('/:id/notification', ClientController.getNotifications)
 router.post('/:id/confirm', ClientController.postConfirm)
+router.post('/send-email/discount', ClientController.sendEmailsOfDiscount)
 
 module.exports = router

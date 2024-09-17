@@ -3,7 +3,7 @@ const Product = require('../interfaces/product')
 const ProductDetails = require('../interfaces/product.details')
 const Order = require('../interfaces/order')
 
-const { includeProductDetails } = require('./config')
+const { includeProductDetails } = require('./includes/config')
 
 const clientInclude = {
   profile: true
@@ -30,6 +30,17 @@ const favoriteInclude = {
 }
 
 class ClientModel {
+
+  static async verifyClient(email) {
+    const client = await database.client.update({
+      where: {
+        email
+      },
+      data: {
+        validEmail: true
+      }
+    })
+  }
 
   static async findMany() {
     const client = await database.client.findMany({
@@ -86,9 +97,6 @@ class ClientModel {
         username,
         email,
         password,
-        chat: {
-          create: {},
-        },
         profile: {
           connect: {
             id: 1
@@ -112,7 +120,7 @@ class ClientModel {
     return client
   }
 
-  static async update(id, username, email, password, image) {
+  static async update(id, { username, email, password, image }) {
     const client = await database.client.update({
       where: {
         id
@@ -121,7 +129,8 @@ class ClientModel {
         username,
         email,
         password,
-        image
+        image,
+        
       },
       include: clientInclude
     })
@@ -199,7 +208,7 @@ class ClientModel {
         clientId: id,
         products: {
           create: products
-        }
+        },
       },
       include: orderInclude
     })

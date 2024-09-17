@@ -3,6 +3,7 @@ const OrderModel = require('../../data/models/order.model')
 const ProductModel = require('../../data/models/product.model')
 const SocketManager = require('../../data/clients/socket.manager')
 const { hash, compare } = require('../libs/bcrypt')
+const { sendEmailPurchaseMade, sendEmailDiscount } = require('../libs/resend')
 
 const { MercadoPagoConfig, Preference, Payment, PaymentRefund } = require('mercadopago');
 
@@ -84,9 +85,9 @@ class ClientController {
       let client
       if (newPassword) {
         const encrypt = await hash(newPassword)
-        client = await ClientModel.update(id, username, email, encrypt)
+        client = await ClientModel.update(id, { username, email, password: encrypt })
       } else {
-        client = await ClientModel.update(id, username, email, newPassword)
+        client = await ClientModel.update(id, { username, email })
       }
       return res.json(client)
     } catch (e) {
@@ -184,7 +185,8 @@ class ClientController {
       )
       const preference = await createPreference(items, order.id, res)
       console.log(preference)
-
+      const client = await ClientModel.findById(id)
+      await sendEmailPurchaseMade(client.email)
       return res.json({ order, ...preference })
     } catch (e) {
       console.log(e)
@@ -292,7 +294,9 @@ class ClientController {
       }
       const shoppingCart = await ClientModel.deleteManyProduct(id) // Elimina los productos que estaban en el carrito de compras
       const preference = await createPreference(items, order.id, res)
+      const client = await ClientModel.findById(id)
       console.log(preference)
+      await sendEmailPurchaseMade(client.email)
       return res.json({ order, ...preference })
     } catch (e) {
       console.log(e)
@@ -364,6 +368,21 @@ class ClientController {
       const id = parseInt(req.params.id)
       const notifications = await ClientModel.findNotifications(id)
       return res.json(notifications)
+    } catch (e) {
+      console.log(e)
+      return res.status(500).json({ message: 'Server error' })
+    }
+  }
+
+  static async sendEmailsOfDiscount(req, res) {
+    try {
+      const clients = await ClientModel.findMany()
+      const clientsSelected = clients.slice(0, 10) // solo recojemos los primeros 10 clientes
+      const emails = clientsSelected.map(client => client.email)
+      // const { data, error } = await sendEmailDiscount(['chaparro.lautaro.et21.21@gmail.com'])
+      const { data, error } = await sendEmailDiscount(emails)
+      console.log(data, error)
+      return res.status(200).json({ message: 'Emails enviados' })
     } catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server error' })

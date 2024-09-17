@@ -13,9 +13,25 @@ function formatQuery(query) {
   if (isNaN(limit) || limit < 0) {
     limit = 20
   }
+  let name = query.name
+  if (name) {
+    name = name.toLowerCase()
+  }
+  let category = query.category
+  if (category) {
+    category = category.toLowerCase()
+  }
+  let gender = query.gender
+  if (gender) {
+    gender = gender.toLowerCase()
+  }
+
   return {
     offset,
-    limit
+    limit,
+    name,
+    category,
+    gender
   }
 }
 
@@ -40,35 +56,13 @@ function urls(entity, count, offset, limit) {
 
 class ProductController {
 
-  static async get(req, res) {
+  static async getAll(req, res) {
     try {
-      const { offset, limit } = formatQuery(req.query)
+      const { offset, limit, name, category, gender } = formatQuery(req.query)
       const count = await ProductModel.count()
       const { previous, next } = urls('product', count, offset, limit)
-      const results = await ProductModel.findMany(offset, limit)
+      const results = await ProductModel.findMany(offset, limit, { name, category, gender })
       return res.json({ count, previous, next, results })
-    } catch (e) {
-      console.log(e)
-      return res.status(500).json({ message: 'Server Error' })
-    }
-  }
-
-  static async getByCategory(req, res) {
-    try {
-      const name = req.params.name
-      const products = await ProductModel.findManyByCategory(name)
-      return res.json(products)
-    } catch (e) {
-      console.log(e)
-      return res.status(500).json({ message: 'Server Error' })
-    }
-  }
-
-  static async getByName(req, res) {
-    try {
-      const name = req.params.name
-      const products = await ProductModel.findManyByName(name)
-      return res.json(products)
     } catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server Error' })
@@ -79,7 +73,7 @@ class ProductController {
     try {
       const id = parseInt(req.params.id)
       const { clientId } = req.body
-      console.log(req.body)
+      console.log(id)
       const product = await ProductModel.findById(id)
       if (!product)
         return res.status(404).json({ message: 'Product not found' })
@@ -89,10 +83,10 @@ class ProductController {
         for (const favorite of favorites) {
           console.log(product.id, favorite.id)
           if (product.id === favorite.id) {
-            return res.json({...product, isFavorite: true})
+            return res.json({ ...product, isFavorite: true })
           }
         }
-        return res.json({...product, isFavorite: false})
+        return res.json({ ...product, isFavorite: false })
       }
       return res.json(product)
     } catch (e) {
@@ -184,10 +178,25 @@ class ProductController {
 
   static async postComment(req, res) {
     try {
-      const id = parseInt(req.params.id)
-      const { message } = req.body
-      const comment = await ProductModel.createComment(id, message)
+      const clientId = req.body.clientId
+      const message = req.body.message
+      const productId = parseInt(req.params.id)
+      const comment = await ProductModel.createComment({ clientId, productId, message })
       console.log(comment)
+      return res.json(comment)
+    } catch (e) {
+      console.log(e)
+      return res.status(500).json({ message: 'Server Error' })
+    }
+  }
+
+  //PUTVIEWCOMMENT()
+  //pone visto ✔✔ al comentario del cliente 
+  //Pasarle el id del comentario
+  static async viewComment(req, res) {
+    try {
+      const id = parseInt(req.params.id)
+      const comment = await ProductModel.putViewComment(id)
       return res.json(comment)
     } catch (e) {
       console.log(e)
@@ -199,7 +208,7 @@ class ProductController {
     try {
       const id = parseInt(req.params.id)
       const { commentId, message } = req.body
-      const response = await ProductModel.createResponse(commentId, message)
+      const response = await ProductModel.createResponse({commentId, message})
       return res.json(response)
     } catch (e) {
       console.log(e)
@@ -213,6 +222,46 @@ class ProductController {
       const { responseId, message } = req.body
       const product = await ProductModel.updateResponse(responseId, message)
       return res.json(product)
+    } catch (e) {
+      console.log(e)
+      return res.status(500).json({ message: 'Server Error' })
+    }
+  }
+
+  //PUTVIEWRESPONSE()
+  //Pone visto ✔✔ a la respuesta de los vendedores
+  //Pasarle id de la respuesta
+  static async viewResponse(req, res) {
+    try {
+      const id = parseInt(req.params.id)
+      const response = await ProductModel.putViewResponse(id)
+      return res.json(response)
+    } catch (e) {
+      console.log(e)
+      return res.status(500).json({ message: 'Server Error' })
+    }
+  }
+
+  //GETNOTVIEWRESPONSE()
+  //Devuelve todas las repuestas no vistas de los vendedores hacia el cliente
+  //Pasarle id del cliente
+  static async notViewResponse(req, res) {
+    try {
+      const id = parseInt(req.params.id)
+      const response = await ProductModel.getNotViewResponse(id)
+      return res.json(response)
+    } catch (e) {
+      console.log(e)
+      return res.status(500).json({ message: 'Server Error' })
+    }
+  }
+
+  //GETNOTVIEWCOMMENT()
+  //Devuelve todos los comentarios no vistos de los clientes hacia los vendedores
+  static async notViewComment(req, res) {
+    try {
+      const comment = await ProductModel.getNotViewComment()
+      return res.json(comment)
     } catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server Error' })

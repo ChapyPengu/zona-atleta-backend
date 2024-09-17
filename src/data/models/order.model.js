@@ -23,7 +23,8 @@ class OrderModel {
             }
           }
         },
-        client: true
+        client: true,
+        orderMessages: true
       }
     })
     return {

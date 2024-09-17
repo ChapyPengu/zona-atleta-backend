@@ -30,15 +30,24 @@ class ProductModel {
     return await database.product.count()
   }
 
-  static async findMany(offset, limit) {
+  static async findMany(offset, limit, { name, category, gender }) {
     const products = await database.product.findMany({
       skip: offset,
-      take: limit
+      take: limit,
+      where: {
+        name: {
+          contains: name
+        },
+        category: {
+          name: category
+        },
+        gender
+      }
     })
     return products.map(p => new ProductInterface(p))
   }
 
-  static async findManyDiscount(offset, limit) {
+  static async findManyDiscount({ offset, limit }) {
     const discounts = await database.discount.findMany({
       skip: offset,
       take: limit,
@@ -47,7 +56,7 @@ class ProductModel {
     return discounts.map(d => new DiscountedProduct(d))
   }
 
-  static async findManyPopular(offset, limit) {
+  static async findManyPopular({ offset, limit }) {
     const products = await database.product.findMany({
       skip: offset,
       take: limit,
@@ -58,39 +67,13 @@ class ProductModel {
     return products.map(p => new ProductInterface(p))
   }
 
-  static async findManyLast(offset, limit) {
+  static async findManyLast({ offset, limit }) {
     const last = await database.last.findMany({
       skip: offset,
       take: limit,
       include: includeLastProduct
     })
     return last.map(l => new LastProduct(l))
-  }
-
-  static async findManyByCategory(name, offset, limit) {
-    const products = await database.product.findFirst({
-      skip: offset,
-      take: limit,
-      where: {
-        category: {
-          name
-        }
-      }
-    })
-    return products.map(p => new ProductInterface(p))
-  }
-
-  static async findManyByName(name, offset, limit) {
-    const products = await database.product.findMany({
-      skip: offset,
-      take: limit,
-      where: {
-        name: {
-          contains: name
-        }
-      }
-    })
-    return products.map(p => new ProductInterface(p))
   }
 
   static async findById(id) {
@@ -100,7 +83,11 @@ class ProductModel {
       },
       include: {
         category: true,
-        comments: true,
+        comments: {
+          include: {
+            response: true
+          }
+        },
         discount: true,
         favorites: true,
         likes: true
@@ -158,7 +145,7 @@ class ProductModel {
     // return new ProductDetailsInterface(product)
   }
 
-  static async createComment(clientId, productId, message) {
+  static async createComment({ clientId, productId, message }) {
     const comment = await database.comment.create({
       data: {
         clientId,
@@ -169,7 +156,7 @@ class ProductModel {
     return comment
   }
 
-  static async createResponse(commentId, message) {
+  static async createResponse({ commentId, message }) {
     const response = await database.response.create({
       data: {
         commentId,
@@ -179,16 +166,76 @@ class ProductModel {
     return response
   }
 
-  static async updateResponse(responseId, message) {
+  static async updateResponse(responseId, { message, view  }) {
     const response = await database.response.update({
       where: {
         id: responseId
       },
       data: {
-        message
+        message,
+        view
       }
     })
     return response
+  }
+
+
+  //PUTVIEWRESPONSE()
+  //Recibe el id de la respuesta 
+  //Devuelve la respuesta marcada como vista ✔✔ por el cliente
+  static async putViewResponse(clientId) {
+    const response = await database.response.updateMany({
+      where: {
+        comment: {
+          clientId
+        }
+      },
+      data: {
+        view: true
+      }
+    })
+    return response
+  }
+
+  //GETNOTVIEWCOMMENT()
+  //Devuelve todos los comentarios de los clientes que no fueron vistos por los vendedores
+  static async getNotViewComment() {
+    const comment = await database.comment.findMany({
+      where: {
+        view: false
+      }
+    })
+    return comment
+  }
+
+  //GETNOTVIEWRESPONSE()
+  //Recibe id que es igual al id del cliente
+  //Devuelve todas las respuestas de los comentarios del cliente que no fueron vistas por el mismo
+  static async getNotViewResponse(id) {
+    const response = await database.response.findMany({
+      where: {
+        comment: {
+          clientId: id
+        },
+        view: false
+      }
+    })
+    return response
+  }
+
+  //PUTVIEWCOMMENT()
+  //Recibe el id del comentario
+  //Devuelve el comentario marcado como visto por el vendedor 
+  static async putViewComment(id) {
+    const comment = await database.comment.update({
+      where: {
+        id
+      },
+      data: {
+        view: true
+      }
+    })
+    return comment
   }
 }
 

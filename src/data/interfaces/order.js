@@ -1,5 +1,7 @@
 const Product = require('./product')
 
+const BACKEND_URL = process.env.BACKEND_URL
+
 class Order {
 
   constructor(order) {
@@ -10,6 +12,7 @@ class Order {
     this.paymentId = order.paymentId
     this.paymentMethod = order.paymentMethod
     this.products = order.products.map(p => ({ ...(new Product(p.product)), amount: p.amount }))
+    this.orderMessages = order.orderMessages
   }
 }
 
