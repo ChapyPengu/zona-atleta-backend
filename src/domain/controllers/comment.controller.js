@@ -1,16 +1,28 @@
-const CommentResponseModel = require('../../data/models/comment.model')
-/* const CommentResponseModel = require('./') */
-const BACKEND_URL = process.env.BACKEND_URL
+const CommentModel = require('../../data/models/comment.model')
+const SocketManager = require('../../data/clients/socket.manager')
+const SalesManagerModel = require('../../data/models/sales-manager.model')
 
-class CommentResponseController {
+class CommentController {
+
+  static async getAllByProductId(req, res) {
+    try {
+      const { productId } = req.body
+      const comment = await CommentModel.findMany({ productId })
+      console.log(comment)
+      return res.json(comment)
+    } catch (e) {
+      console.log(e)
+      return res.status(500).json({ message: 'Server Error' })
+    }
+  }
 
   static async postComment(req, res) {
     try {
-      const clientId = req.body.clientId
-      const message = req.body.message
-      const productId = parseInt(req.params.id)
-      const comment = await CommentResponseModel.createComment({ clientId, productId, message })
-      console.log(comment)
+      const { clientId, productId, message } = req.body
+      const salesManager = (await SalesManagerModel.findMany())[0]
+      const comment = await CommentModel.createComment({ clientId, productId, message })
+      // console.log(SocketManager.findSalesManagerById(salesManager.id))
+      SocketManager.salesManagers[1][0].emit('notification', comment)
       return res.json(comment)
     } catch (e) {
       console.log(e)
@@ -24,7 +36,7 @@ class CommentResponseController {
   static async viewComment(req, res) {
     try {
       const id = parseInt(req.params.id)
-      const comment = await CommentResponseModel.putViewComment(id)
+      const comment = await CommentModel.putViewComment(id)
       return res.json(comment)
     } catch (e) {
       console.log(e)
@@ -34,9 +46,8 @@ class CommentResponseController {
 
   static async postResponse(req, res) {
     try {
-      const id = parseInt(req.params.id)
       const { commentId, message } = req.body
-      const response = await CommentResponseModel.createResponse({commentId, message})
+      const response = await CommentModel.createResponse({ commentId, message })
       return res.json(response)
     } catch (e) {
       console.log(e)
@@ -46,9 +57,8 @@ class CommentResponseController {
 
   static async putResponse(req, res) {
     try {
-      const id = parseInt(req.params.id)
-      const { responseId, message } = req.body
-      const product = await CommentResponseModel.updateResponse(responseId, message)
+      const { responseId, message, view } = req.body
+      const product = await CommentModel.updateResponse(responseId, { message, view })
       return res.json(product)
     } catch (e) {
       console.log(e)
@@ -56,14 +66,11 @@ class CommentResponseController {
     }
   }
 
-  //PUTVIEWRESPONSE()
-  //Pone visto ✔✔ a la respuesta de los vendedores
-  //Pasarle id de la respuesta
-  static async viewResponse(req, res) {
+  static async putViewResponses(req, res) {
     try {
-      const id = parseInt(req.params.id)
-      const response = await CommentResponseModel.putViewResponse(id)
-      return res.json(response)
+      const { clientId } = req.body
+      const product = await CommentModel.updateViewResponse({ clientId })
+      return res.json(product)
     } catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server Error' })
@@ -76,7 +83,7 @@ class CommentResponseController {
   static async notViewResponse(req, res) {
     try {
       const id = parseInt(req.params.id)
-      const response = await CommentResponseModel.getNotViewResponse(id)
+      const response = await CommentModel.getNotViewResponse(id)
       return res.json(response)
     } catch (e) {
       console.log(e)
@@ -88,64 +95,13 @@ class CommentResponseController {
   //Devuelve todos los comentarios no vistos de los clientes hacia los vendedores
   static async notViewComment(req, res) {
     try {
-      const comment = await CommentResponseModel.getNotViewComment()
+      const comment = await CommentModel.getNotViewComment()
       return res.json(comment)
     } catch (e) {
       console.log(e)
       return res.status(500).json({ message: 'Server Error' })
     }
   }
-/*   static async getAllByProductId(req, res) {
-    try {
-      const { productId } = req.query
-      if (!productId)
-        return res.status(403).json({ message: 'Product id not found' })
-
-      const comments = await CommentResponseModel.getProductIdComments({productId})
-      return res.json(comments)
-    } catch (e) {
-      console.log(e)
-      return res.status(500).json({ message: 'Server Error' })
-    }
-  }
-
-  static async postComment(req, res) {
-    try {
-      const clientId = req.body.clientId
-      const message = req.body.message
-      const productId = parseInt(req.params.id)
-      const comment = await CommentResponseModel.createComment(clientId, productId,message)
-      console.log(comment)
-      return res.json(comment)
-    } catch (e) {
-      console.log(e)
-      return res.status(500).json({ message: 'Server Error' })
-    }
-  }
-
-  static async postResponse(req, res) {
-    try {
-      const id = parseInt(req.params.id)
-      const { commentId, message } = req.body
-      const response = await CommentResponseModel.createResponse(commentId, message)
-      return res.json(response)
-    } catch (e) {
-      console.log(e)
-      return res.status(500).json({ message: 'Server Error' })
-    }
-  }
-
-  static async putResponse(req, res) {
-    try {
-      const id = parseInt(req.params.id)
-      const { responseId, message } = req.body
-      const product = await CommentResponseModel.updateResponse(responseId, message)
-      return res.json(product)
-    } catch (e) {
-      console.log(e)
-      return res.status(500).json({ message: 'Server Error' })
-    }
-  } */
 }
 
-module.exports = CommentResponseController
+module.exports = CommentController

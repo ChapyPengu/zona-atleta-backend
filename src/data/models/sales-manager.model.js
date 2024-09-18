@@ -53,6 +53,15 @@ class SalesManagerModel {
     return salesManager
   }
 
+  static async findMany() {
+    const salesManager = await database.salesManager.findMany({
+      include: {
+        profile: true
+      }
+    })
+    return salesManager
+  }
+
   static async findByUsernameAndPassword(username, password) {
     const salesManager = await database.salesManager.findFirst({
       where: {

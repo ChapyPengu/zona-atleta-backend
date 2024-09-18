@@ -13,6 +13,7 @@ const categoryRoutes = require('./routes/category.routes')
 const clientRoutes = require('./routes/client.routes')
 const orderRoutes = require('./routes/order.routes')
 const orderMessageRoutes = require('./routes/order.message.routes')
+const commentRoutes = require('./routes/comment.routes')
 
 const SocketManager = require('../data/clients/socket.manager')
 
@@ -54,6 +55,7 @@ app.use('/api/product', productRoutes)
 app.use('/api/category', categoryRoutes)
 app.use('/api/order', orderRoutes)
 app.use('/api/order-message', orderMessageRoutes)
+app.use('/api/comment', commentRoutes)
 
 
 // Directorios y ficheros publicos
@@ -61,7 +63,15 @@ app.use(express.static(path.join(__dirname, '../../public')))
 
 // Eventos via sockets
 io.on('connection', socket => {
-
+  socket.on('auth', (user) => {
+    if (user.profile.id === PROFILES.CLIENT) {
+      // console.log('Soy un cliente')
+      SocketManager.addClient(user, socket)
+    } else if (user.profile.id === PROFILES.SALES_MANAGER) {
+      // console.log('Soy un jefe de ventas')
+      SocketManager.addSalesManager(user, socket)
+    }
+  })
 })
 
 module.exports = server

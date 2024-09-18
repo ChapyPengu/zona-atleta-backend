@@ -61,22 +61,43 @@ function createPDF(dataCallback, endCallback, order) {
   doc.on('data', dataCallback)
   doc.on('end', endCallback)
 
-  doc.fontSize(32).text('Recibo de Compra', {
-    lineGap: 16
-  })
+  // Encabezado
+  doc.fontSize(24).text('Zona Atleta', { align: 'center' })
+  doc.fontSize(16).text('Recibo de Compra', { align: 'center' })
+  doc.moveDown(1)
 
+  doc.fontSize(12).text(`Fecha: ${order.date}`)
+  doc.text(`Estado: ${order.state}`)
+  doc.text(`Método de Pago: ${order.paymentMethod}`)
+  doc.text(`Cliente: ${order.client.username}`)
+  doc.text(`Email: ${order.client.email}`)
+  doc.moveDown(2)
+
+  // Tabla de Productos
   const table = {
     title: 'Productos de la compra',
-    headers: ['ID', 'Nombre', 'Categoria', 'Precio', 'Cantidad', 'Precio Total'],
+    headers: ['ID', 'Nombre', 'Categoría', 'Precio Unitario', 'Cantidad', 'Precio Total'],
     rows: [
-      ...order.products.map(p => ([p.id, p.name, p.category.name, p.price, p.amount, p.price * p.amount])),
-      order.products.map(p => (['Total', '', '', '', order.products.reduce((acum, a) => acum + a.price, 0)]))
+      ...order.products.map(p => ([p.id, p.name, p.category.name, p.price.toFixed(2), p.amount, (p.price * p.amount).toFixed(2)])),
+      [ 'Total', '', '', '', '', order.products.reduce((acum, p) => acum + (p.price * p.amount), 0).toFixed(2)]
     ]
   }
 
   doc.table(table, {
-    padding: 32
+    padding: 10,
+    prepareHeader: () => doc.font('Helvetica-Bold'),
+    prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
+      doc.font('Helvetica')
+      if (indexRow === table.rows.length - 1) {
+        doc.font('Helvetica-Bold')
+      }
+    }
   })
+
+  doc.moveDown(1)
+
+  // Pie de Página
+  doc.fontSize(10).text('Gracias por su compra!', { align: 'center' })
 
   doc.end()
 }

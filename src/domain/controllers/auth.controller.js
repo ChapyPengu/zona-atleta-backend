@@ -114,10 +114,12 @@ class AuthController {
       const { email } = req.body
       const { tokenVerifyCode } = req.cookies
       const { verifyCode } = await verifyAccesToken(tokenVerifyCode)
-      const { data, error } = await sendEmailVerification('delivered@resend.dev', verifyCode)
-      console.log(data, error)
-      if (error)
-        return res.status(500).json({ message: 'Error' })
+      console.log(email)
+      await sendEmailVerification(email, verifyCode)
+      console.log('email enviado')
+      // console.log(data, error)
+      // if (error)
+        // return res.status(500).json({ message: 'Error' })
       console.log('Email sent')
       return res.status(200).json({ message: 'Email enviado' })
     } catch (e) {

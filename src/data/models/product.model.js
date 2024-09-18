@@ -26,11 +26,22 @@ const includeLastProduct = {
 
 class ProductModel {
 
+  static async pauseById(id) {
+    return await database.product.update({
+      where: {
+        id
+      },
+      data: {
+        available: false
+      }
+    })
+  }
+
   static async count() {
     return await database.product.count()
   }
 
-  static async findMany(offset, limit, { name, category, gender }) {
+  static async findMany(offset, limit, { name, category, gender, available }) {
     const products = await database.product.findMany({
       skip: offset,
       take: limit,
@@ -41,7 +52,8 @@ class ProductModel {
         category: {
           name: category
         },
-        gender
+        gender,
+        available
       }
     })
     return products.map(p => new ProductInterface(p))
@@ -51,6 +63,11 @@ class ProductModel {
     const discounts = await database.discount.findMany({
       skip: offset,
       take: limit,
+      where: {
+        product: {
+          available: true
+        }
+      },
       include: includeDiscountedProduct
     })
     return discounts.map(d => new DiscountedProduct(d))
@@ -62,6 +79,9 @@ class ProductModel {
       take: limit,
       orderBy: {
         visits: 'desc'
+      },
+      where: {
+        available: true
       }
     })
     return products.map(p => new ProductInterface(p))
@@ -71,6 +91,11 @@ class ProductModel {
     const last = await database.last.findMany({
       skip: offset,
       take: limit,
+      where: {
+        product: {
+          available: true
+        }
+      },
       include: includeLastProduct
     })
     return last.map(l => new LastProduct(l))
@@ -143,99 +168,6 @@ class ProductModel {
     })
     return product
     // return new ProductDetailsInterface(product)
-  }
-
-  static async createComment({ clientId, productId, message }) {
-    const comment = await database.comment.create({
-      data: {
-        clientId,
-        productId,
-        message
-      }
-    })
-    return comment
-  }
-
-  static async createResponse({ commentId, message }) {
-    const response = await database.response.create({
-      data: {
-        commentId,
-        message
-      }
-    })
-    return response
-  }
-
-  static async updateResponse(responseId, { message, view  }) {
-    const response = await database.response.update({
-      where: {
-        id: responseId
-      },
-      data: {
-        message,
-        view
-      }
-    })
-    return response
-  }
-
-
-  //PUTVIEWRESPONSE()
-  //Recibe el id de la respuesta 
-  //Devuelve la respuesta marcada como vista ✔✔ por el cliente
-  static async putViewResponse(clientId) {
-    const response = await database.response.updateMany({
-      where: {
-        comment: {
-          clientId
-        }
-      },
-      data: {
-        view: true
-      }
-    })
-    return response
-  }
-
-  //GETNOTVIEWCOMMENT()
-  //Devuelve todos los comentarios de los clientes que no fueron vistos por los vendedores
-  static async getNotViewComment() {
-    const comment = await database.comment.findMany({
-      where: {
-        view: false
-      }
-    })
-    return comment
-  }
-
-  //GETNOTVIEWRESPONSE()
-  //Recibe id que es igual al id del cliente
-  //Devuelve todas las respuestas de los comentarios del cliente que no fueron vistas por el mismo
-  static async getNotViewResponse(id) {
-    const response = await database.response.findMany({
-      where: {
-        comment: {
-          clientId: id
-        },
-        view: false
-      }
-    })
-    return response
-  }
-
-  //PUTVIEWCOMMENT()
-  //Recibe el id del comentario
-  //Devuelve el comentario marcado como visto por el vendedor 
-  static async putViewComment(id) {
-    const comment = await database.comment.update({
-      where: {
-        id
-      },
-      data: {
-        view: true
-      }
-    })
-    return comment
   }
 }
 

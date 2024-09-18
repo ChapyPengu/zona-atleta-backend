@@ -9,6 +9,7 @@ const { MercadoPagoConfig, Preference, Payment, PaymentRefund } = require('merca
 
 const mpc = new MercadoPagoConfig({ accessToken: process.env.ACCESS_TOKEN });
 const CLIENT = process.env.CLIENT
+const BACKEND_URL = process.env.BACKEND_URL
 
 const createPreference = async (items, idOrder, res) => {
   const body = {
@@ -19,7 +20,7 @@ const createPreference = async (items, idOrder, res) => {
       pending: `${CLIENT}/order/${idOrder}`,
     },
     auto_return: 'approved',
-    notification_url: `https://zona-atleta-backend-production.up.railway.app/api/order/webhook?orderId=${idOrder}`, // Pasar idOrder como query param
+    notification_url: `${BACKEND_URL}api/order/webhook?orderId=${idOrder}`, // Pasar idOrder como query param
   };
   // Crear la preferencia de pago de manera asíncrona
   const preference = await new Preference(mpc).create({ body });
@@ -266,7 +267,11 @@ class ClientController {
     try {
       const id = parseInt(req.params.id) // Se obtiene la id del cliente
       const { paymentMethod, address } = req.body
-      const products = await ClientModel.findProducts(id)
+      let productss = await ClientModel.findProducts(id)
+      let products = []
+      for (const p of productss) {
+        products.push({ ...(await ProductModel.findById(p.id)), amount: p.amount })
+      }
       if (products.length === 0) // Si el cliente no tiene productos no puede comprar
         return res.status(400).json({ message: 'Shopping Cart is Empty' })
 
@@ -283,7 +288,6 @@ class ClientController {
       const state = "pendiente de pago"
       const order = await ClientModel.createOrder(id, paymentMethod, paymentId, address, state, productsFormat)
       for (const cp of products) {
-        // Actualiza los datos de todos los productos de la compra
         const updatedProduct = await ProductModel.update(
           cp.id,
           {
@@ -295,7 +299,6 @@ class ClientController {
       const shoppingCart = await ClientModel.deleteManyProduct(id) // Elimina los productos que estaban en el carrito de compras
       const preference = await createPreference(items, order.id, res)
       const client = await ClientModel.findById(id)
-      console.log(preference)
       await sendEmailPurchaseMade(client.email)
       return res.json({ order, ...preference })
     } catch (e) {
