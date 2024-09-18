@@ -20,7 +20,7 @@ const createPreference = async (items, idOrder, res) => {
       pending: `${CLIENT}/order/${idOrder}`,
     },
     auto_return: 'approved',
-    notification_url: `${BACKEND_URL}api/order/webhook?orderId=${idOrder}`, // Pasar idOrder como query param
+    notification_url: `https://zona-atleta-backend.onrender.com/api/order/webhook?orderId=${idOrder}`, // Pasar idOrder como query param
   };
   // Crear la preferencia de pago de manera asíncrona
   const preference = await new Preference(mpc).create({ body });
